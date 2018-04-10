@@ -13,7 +13,7 @@
 #include <errno.h>
 #include <assert.h>
 
-#define MAX_BACKLOG 5 
+#define MAX_BACKLOG 5
 
 #define DEBUG_INFO \
     do { \
@@ -44,21 +44,15 @@ int Inet_ntop6() {
 }
 
 char* SockAddrToString(const struct sockaddr_in* addr) {
-    char host[32] = {};
-    int port = 0;
+    char *ip = (char*)malloc(50*sizeof(char));
+    bzero(ip, sizeof(char)*50);
 
-    inet_ntop(AF_INET, &addr->sin_addr, host, sizeof(struct sockaddr));
-    port = ntohl(addr->sin_port);
-
-    char ip[50] = {};
-    
     strcat(ip, "ip:");
-    strcat(ip, host);
-
+    inet_ntop(AF_INET, &addr->sin_addr, ip+3, sizeof(struct sockaddr));
     return ip;
 }
 
-inline struct sockaddr_in6 SockAddr6(const char* host, int port) {
+struct sockaddr_in6 SockAddr6(const char* host, int port) {
     struct sockaddr_in6 addr;
 
     if (1 != inet_pton(AF_INET6, host, &addr.sin6_addr)) {
@@ -71,7 +65,7 @@ inline struct sockaddr_in6 SockAddr6(const char* host, int port) {
     return addr;
 }
 
-inline struct sockaddr_in SockAddr4(const char* host, int port) {
+struct sockaddr_in SockAddr4(const char* host, int port) {
     struct sockaddr_in addr;
 
     if (-1 == inet_pton(AF_INET, host, &addr.sin_addr)) {
@@ -101,7 +95,7 @@ int Bind(int sock_fd, struct sockaddr_in* addr, socklen_t len) {
 
     if (-1 == ret) {
         DEBUG_INFO;
-        ERR_EXIT("Bind"); 
+        ERR_EXIT("Bind");
     }
 
     return ret;
@@ -130,6 +124,8 @@ int Listen(int sock_fd, int baklog) {
 }
 
 int Accept(int sock_fd, struct sockaddr_in* addr, socklen_t* len) {
+
+    //sleep(5);
     int ret = accept(sock_fd, (struct sockaddr*)addr, len);
 
     if (-1 == ret) {
@@ -147,7 +143,7 @@ int TCPListen(const char* host, int port) {
     socklen_t sock_len = sizeof(struct sockaddr);
     sock_fd = Socket(AF_INET, SOCK_STREAM);
     addr = SockAddr4(host, port);
-    
+
     Bind(sock_fd, &addr, sock_len);
 
     Listen(sock_fd, MAX_BACKLOG);
@@ -163,7 +159,7 @@ int TCPConnect(const char* host, int port) {
     sock_fd = Socket(AF_INET, SOCK_STREAM);
     addr = SockAddr4(host, port);
 
-    //Bind(sock_fd, &addr, sock_len); 
+    //Bind(sock_fd, &addr, sock_len);
 
     Connect(sock_fd, &addr, sock_len);
 

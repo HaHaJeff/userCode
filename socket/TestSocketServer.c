@@ -13,8 +13,22 @@ int main(int args, char** argv) {
     while (1) {
         struct sockaddr_in conn_addr;
         socklen_t len = sizeof(struct sockaddr_in);
-        int conn_fd = accept(listen_fd, (struct sockaddr*)&conn_addr, &len);
-        printf("conn_addr: %s\n", SockAddrToString(&conn_addr));
+        sleep(5);
+        int conn_fd = Accept(listen_fd, &conn_addr, &len);
+
+        char* ip = SockAddrToString(&conn_addr);
+        int ret = send(conn_fd, ip, strlen(ip) + 1, 0);
+        if (-1 == ret) {
+            DEBUG_INFO;
+            ERR_EXIT("send");
+        }
+        if (recv(conn_fd, ip, 5, 0) == 0) {
+            DEBUG_INFO;
+            ERR_EXIT("recv");
+        }
+        printf("conn_addr: %s\n", ip);
+        free(ip);
+        ip = NULL;
     }
 
     return 0;
