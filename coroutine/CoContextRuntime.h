@@ -36,6 +36,7 @@ namespace coroutine {
       };
 
       //first_done_item和ContextItem_中的next_done_item形成了空闲ContextItem的下标索引链表
+      //使用first_done_item和ContextItem_中的next_done_item构成栈Stack
       size_t stack_size_;                         //coroutine的stack大小
       std::vector<ContextItem> context_list_;     //保存coroutine的运行时上下文
       int first_done_item_;

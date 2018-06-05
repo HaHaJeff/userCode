@@ -11,7 +11,6 @@ typedef std::function< void(void *) > CoFunc_t;
 typedef std::function< void() > CoDoneCallback_t;
 typedef std::function< CoContext*(size_t, CoFunc_t, void *, CoDoneCallback_t, const bool) > CoContextCreateFunc_t;
 
-
 //将CoContext变成一个抽象类的好处：提供接口，而不提供具体实现，将具体实现与具体特定系统
 //绑定，从而使得程序可移植
 class CoContext {
