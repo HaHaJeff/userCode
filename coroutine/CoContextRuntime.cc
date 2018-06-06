@@ -75,7 +75,7 @@ namespace coroutine {
       return false;
     }
 
-    // FIXME: auto me
+    // FIXME: auto &
     // auto context_item = context_list_[index]
     auto &context_item = context_list_[index];
 
