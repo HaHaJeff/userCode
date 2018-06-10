@@ -1,21 +1,15 @@
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode(int x) : val(x), next(NULL) {}
- * };
- */
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
 
-#include <iostream>
-using namespace std;
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
 
-struct ListNode {
-     int val;
-     ListNode *next;
-     ListNode(int x) : val(x), next(NULL) {}
-};
+Example
+```
+Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 0 -> 8
+Explanation: 342 + 465 = 807.
+```
 
+``` cpp
 class Solution {
 public:
     ListNode *attach(ListNode* l1, ListNode *l2, int cd) {
@@ -91,34 +85,4 @@ public:
     }
 };
 
-#if 0
-int main(void)
-{
-    ListNode p1(2), p2(4), p3(3) ,p4(5), l1(5), l2(6), l3(4);
-    p1.next = &p2;
-    p2.next = &p3;
-    p3.next = &p4;
-
-    l1.next = &l2;
-    l2.next = &l3;
-    Solution sol;
-    ListNode *pRet = sol.addTwoNumbers(&p1, &l1);
-    for(; pRet != NULL; pRet = pRet->next) cout << pRet->val << " ";
-    cout << endl;
-    return 0;
-}
-#endif
-
-#if 1
-
-int main(void) {
-    ListNode p1(1), p2(8), l1(0);
-    p1.next = &p2;
-    Solution sol;
-
-    ListNode *pRet = sol.addTwoNumbers(&p1, &l1);
-    for(; pRet != NULL; pRet = pRet->next) cout << pRet->val << " ";
-    cout << endl;
-    return 0;
-}
-#endif
+```
