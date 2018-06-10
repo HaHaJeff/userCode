@@ -1,3 +1,4 @@
 - 001 two-sum
 - 002 add-two-numbers
-- 003
+- 003 longest-substring-without-repeating-characters
+- 004 median-of-two-sorted-arrays
