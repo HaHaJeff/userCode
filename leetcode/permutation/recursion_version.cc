@@ -8,7 +8,7 @@ void Permutation(char *arr, int start, int end);
 
 int main()
 {
-  char arr[] = "123";
+  char arr[] = "1223";
   int size = sizeof(arr)/sizeof(char);
   Permutation(arr, 0, size-2);
 }
@@ -38,7 +38,9 @@ void Permutation(char *arr, int start, int end)
     return;
   }
 
+
   for (int i = start; i <= end; i++) {
+
     Swap(arr, start, i);
     Permutation(arr, start+1, end);
     Swap(arr, start, i);
