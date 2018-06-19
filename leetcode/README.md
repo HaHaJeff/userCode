@@ -3,3 +3,5 @@
 - 003 longest-substring-without-repeating-characters
 - 004 median-of-two-sorted-arrays
 - list 链表相关题目
+- binaryTree 二叉树相关题目
+- permutation 排列相关题目
