@@ -1,8 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <set>
 #include <algorithm>
+#include <limits.h>
 using namespace std;
-class Solution {
+class Solution1 {
 public:
     int firstMissingPositive(vector<int>& nums) {
         sort(nums.begin(), nums.end());
@@ -21,6 +23,23 @@ public:
 
         if (firstPositiveNumIndex == -1) return 1;
         return i - firstPositiveNumIndex + 1;
+    }
+};
+
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        std::set<int> s;
+
+        for_each(nums.begin(), nums.end(), [&s](auto& i){s.insert(i);});
+        int num = 1;
+
+        for (num = 1; num < INT_MAX; num++) {
+            if (s.find(num) == s.end()) {
+                break;
+            }
+        }
+        return num;
     }
 };
 
