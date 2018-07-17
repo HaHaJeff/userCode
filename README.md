@@ -45,3 +45,6 @@ unsigned int GetDays() const {
 代码参考自phxrpc，从中剥离出来了协成相关的文件
 ### 复用已经完成工作的协程空间
 CoContextRuntime通过vector对协程进行保存，完成工作的协程通过一种类似链表的方式组织起来，从而可以起到协程的复用
+
+## refcount
+一个引用计数的c++实现
