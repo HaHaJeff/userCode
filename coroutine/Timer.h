@@ -5,6 +5,7 @@
 #include <vector>
 
 typedef struct CoContextSocket CoContextSocket_t;
+
 class Timer {
 public:
     Timer();
@@ -36,6 +37,5 @@ private:
             return abs_time == obj.abs_time_;
         }
     };
-
     std::vector<TimeObj> timer_heap_;
 };
