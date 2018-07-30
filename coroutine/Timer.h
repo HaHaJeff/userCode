@@ -3,6 +3,7 @@
 #include <cinttypes>
 #include <cstdlib>
 #include <vector>
+#include <cstdint>
 
 typedef struct CoContextSocket CoContextSocket_t;
 
@@ -12,7 +13,7 @@ public:
     ~Timer();
 
     void AddTimer(uint64_t abs_time, CoContextSocket_t *socket);
-    void RemoveTImer(const size_t timer_id);
+    void RemoveTimer(const size_t timer_id);
     CoContextSocket_t* PopTimeout();
     const int GetNextTimeout() const;
     const bool IsEmpty();
