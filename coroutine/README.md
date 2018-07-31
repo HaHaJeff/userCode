@@ -12,6 +12,7 @@
 ## CoContextRuntime.h
 - 提供协程的统一调度接口，采用vector对协程进行保存；
 - 对已经运行完毕的协程，不删除其空间，通过对空闲协程以类似链表的方式组织起来，可以完成协程的复用；
+- 在RunTime类初始化时完成底层Context create函数的确定，在实现中采用CoContextSys::DoCreate作为CoContext::Create函数的回调函数，DoCreate以及Create是静态函数。
 
 ## Timer.h
 - 使用小根堆完成时间node的管理;
