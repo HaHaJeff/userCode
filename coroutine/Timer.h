@@ -28,15 +28,19 @@ private:
 
     struct TimerObj {
         TimerObj(uint64_t abs_time, CoContextSocket_t *socket)
-            : abs_time(abs_time), socket_(socket) {
+            : abs_time_(abs_time), socket_(socket) {
 
             }
-        uint64_t abs_time;
+        uint64_t abs_time_;
         CoContextSocket_t *socket_;
 
+        bool operator <(const TimerObj& obj) const {
+            return abs_time_ < obj.abs_time_;
+        }
+
         bool operator ==(const TimerObj& obj) const {
-            return abs_time == obj.abs_time_;
+            return abs_time_ == obj.abs_time_;
         }
     };
-    std::vector<TimeObj> timer_heap_;
+    std::vector<TimerObj> timer_heap_;
 };
