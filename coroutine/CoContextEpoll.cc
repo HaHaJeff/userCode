@@ -3,11 +3,14 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 namespace coroutine
 {
-typedef struct CoContextSocket
-{
+  typedef struct CoContextSocket
+  {
     EpollScheduler *scheduler;
     int coroutine_id;
 
@@ -21,56 +24,151 @@ typedef struct CoContextSocket
     size_t timer_id;
     struct epoll_event event;
     void *args;
-} CoContextSocket_t;
+  } CoContextSocket_t;
 
-EpollNotify::EpollNotify(EpollScheduler *scheduler) : scheduler_(scheduler)
-{
+  EpollNotify::EpollNotify(EpollScheduler *scheduler) : scheduler_(scheduler)
+  {
     pipe_fds_[0] = pipe_fds_[1] = -1;
-}
+  }
 
-EpollNotify::~EpollNotify()
-{
+  EpollNotify::~EpollNotify()
+  {
     if (pipe_fds_[0] != -1)
     {
-        close(pipe_fds_[0]);
+      close(pipe_fds_[0]);
     }
     if (pipe_fds_[1] != -1)
     {
-        close(pipe_fds_[1]);
+      close(pipe_fds_[1]);
     }
-}
+  }
 
-//将Func作为一个协程运行
-void EpollNotifier::Run()
-{
+  //将Func作为一个协程运行
+  void EpollNotifier::Run()
+  {
     fcntl(pipe_fds_[1], F_SETFL, O_NONBLOCK);
     scheduler_->AddTask(std::bind(&EpollNotifier::Func, this), nullptr)
-}
+  }
 
-void EpollNotifier::Func()
-{
+  void EpollNotifier::Func()
+  {
     CoContextSocket_t *socket{scheduler_->CreateSocket(pipe_fds_[0], -1, -1, false)};
     char tmp[2] = {0};
     while (true)
     {
-        if (CoContextRead(*socket, tmp, 1, 0) < 0)
-        {
-            break;
-        }
+      if (CoContextRead(*socket, tmp, 1, 0) < 0)
+      {
+        break;
+      }
     }
     free(socket);
-}
+  }
 
-void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id)
-{
+  void EpollNotifier::Notify() {
+    ssize_t write_len = write(pipe_fds_[1], (void *)"a", 1);
+  }
+
+  EpollScheduler::EpollScheduler(size_t stack_size, int max_task, const bool need_stack_protect) :
+    runtime_(stack_size, need_stack_protect), epoll_wake_up_(this) {
+      max_task_ = max_task_ + 1;
+
+      epoll_fd = epoll_create(max_task_);
+
+      if (epoll_fd_ < 0) {
+      }
+
+      closed_ = false;
+      run_forever_ = false;
+
+      active_socket_func = nullptr;
+      handler_accepted_fd_func = nullptr;
+      handler_new_request_func = nullptr;
+
+      epoll_wait_events_ = 0;
+      epoll_wait_events_per_second_ = 0;
+      epoll_wait_events_last_cal_time_ = Timer::GetSteadyClockMS();
+    }
+
+  EpollScheduler::~EpollScheduler() {
+    close(epoll_fd_);
+  }
+
+  //单例，不需要考虑多线程安全问题
+  EpollScheduler* EpollScheduler::Instance() {
+    static EpollScheduler obj(64, 1024, 300);
+    return &obj;
+  }
+
+  bool EpollScheduler::IsTaskFull() {
+    return (runtime_.GetUnfinishedItemCount() + (int)to_list_.size()) >= max_task_;
+  }
+
+  void EpollScheduler::AddTask(CoFunc_t func, void *args) {
+    todo_list_.push_back(std::make_pair(func, args));
+  }
+
+  void EpollScheduler::SetActiveSocketFunc(CoContextActiveSocket_t active_socket_func) {
+    active_socket_func_ = active_socket_func;
+  }
+
+  void EpollScheduler::SetHandlerAcceptedFdFunc(CoContextHandlerAcceptedFdFunc_t handler_accepted_fd_func) {
+    handler_accepted_fd_func_ = handler_accepted_fd_func;
+  }
+
+  void EpollScheduler::SetHandlerNewRequestFunc(CoContextHandlerNewRequest_t handler_new_request_func) {
+    handler_new_request_func_ = handler_new_request_func;
+  }
+
+  bool EpollScheduler::YieldTask() {
+    return runtime_.Yield();
+  }
+
+  int EpollScheduler::GetCurrentCoroutine() {
+    return runtime_.GetCurrentCoroutine();
+  }
+
+  CoContextSocket_t* EpollScheduler::CreateSocket(const int fd, const int socket_timeout_ms,
+      const int connect_timeout_ms, const bool no_delay = true) {
+    int tmp = flag ? 1 : 0;
+
+    fcntl(fd, F_SETFL, O_NONBLOCK);
+
+    no_delay ? setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char*)&tmp, sizeof(tmp));
+
+    socket->scheduler = this;
+    socket->epoll_fd = epoll_fd_;
+    socket->event.data.ptr = socket;
+
+    socket->socket = fd;
+    socket->connect_timeout_ms = connect_timeout_ms;
+    socket->socket_timeout_ms =socket_timeout_ms;
+
+    socket->waited_events = 0;
+    socket->args = nullptr;
+
+    return socket;
+  }
+
+  void EpollScheduler::ConsumeTodoList() {
+    while(!todo_list_.empty()) {
+      auto &it = todo_list_.front();
+      int id = runtime_.Create(it.first, it.second);
+      runtime_.Resume(id);
+
+      todo_list_.pop();
+    }
+  }
+
+  void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id)
+  {
     socket.timer_id = timer_id;
-}
+  }
 
-//memory should free by user
-CoContextSocket_t *NewCoContextSocket()
-{
+  //memory should free by user
+  CoContextSocket_t *NewCoContextSocket()
+  {
     //allocate an array, and set memory to zero
     CoContextSocket_t *socket = (CoContextSocket_t *)calloc(1, sizeof(CoContextSocket_t));
     return socket;
-}
+  }
 } // namespace coroutine
