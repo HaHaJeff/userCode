@@ -159,6 +159,93 @@ namespace coroutine
     }
   }
 
+  void EpollScheduler::Close() {
+    closed_ = true;
+  }
+
+  void EpollScheduler::NotifyEpoll() {
+    if (epoll_wait_events_per_second_ < 2000) {
+      epoll_wake_up_.Notify();
+    }
+  }
+
+  void EpollScheduler::ResumeAll(int flag) {
+    std::vector<CoContextSocket_t*> exist_socket_list = timer_.GetSocketList();
+    for (auto &socket : exist_socket_list) {
+      socket->waited_events = flag;
+      runtime_.Resume(socket->coroutine_id);
+    }
+  }
+
+  void EpollScheduler::RunForever() {
+    run_forever_ = true;
+    epoll_wake_up_.Run();
+    Run();
+  }
+
+  void EpollScheduler::StatEpollwaitEvents(const int event_count) {
+    epoll_wait_events_ += event_count;
+    auto now_time = Timer::GetSteadyClockMS();
+    if (now_time > epoll_wait_events_last_cal_time_ + 1000) {
+      epoll_wait_events_per_second_ = epoll_wait_events_;
+      epoll_wait_events_ = 0;
+      epoll_wait_events_last_cal_time_ = now_time;
+    }
+  }
+
+  bool EpollScheduler::Run() {
+    ConsumeTodoList();
+
+    struct epoll_event *events = (struct epoll_event*) calloc(max_task_, sizeof(struct epoll_event));
+
+    int next_timeout = timer_.GetNextTimeout();
+
+    for (; (run_forever_) || (!runtime_.IsAllDone());) {
+      int nfds = epoll_wait(epoll_fd_, events, max_task_, 4);
+
+      if (nfds != -1) {
+        for (int i = 0; i < nfds; i++) {
+          CoContextSocket_t *socket = (CoContextSocket_t*) events[i].data.ptr;
+          socket->waited_events = events[i].events;
+
+          runtime_.Resume(socket->coroutine_id);
+        }
+
+        if (active_socket_func_ != nullptr) {
+          CoContextSocket_t *socket = nullptr;
+          while ((socket = active_socket_func_()) != nullptr) {
+            runtime_.Resume(socket->coroutine_id);
+          }
+        }
+
+        if (handler_accepted_fd_func_ != nullptr) {
+          handler_new_request_func_();
+        }
+
+        if (handler_new_request_func_ != nullptr) {
+          handler_accpeted_fd_func_();
+        }
+
+        if (closed_) {
+          ResumeAll();
+          break;
+        }
+
+        ConsumeTodoList();
+        DealwithTimeout(next_timeout);
+      } else if (errno != EINTR) {
+        ResumeAll();
+        break;
+      }
+
+      StatEpollwaitEvents(nfds);
+    }
+
+    free(events);
+
+    return true;
+  }
+
   void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id)
   {
     socket.timer_id = timer_id;
