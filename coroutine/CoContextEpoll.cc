@@ -68,6 +68,12 @@ namespace coroutine
     ssize_t write_len = write(pipe_fds_[1], (void *)"a", 1);
   }
 
+  enum EpollREventStatus {
+    EpollREvent_Timeout = 0,
+    EpollREvent_Error = -1,
+    EpollREvent_Close = -2,
+  };
+
   EpollScheduler::EpollScheduler(size_t stack_size, int max_task, const bool need_stack_protect) :
     runtime_(stack_size, need_stack_protect), epoll_wake_up_(this) {
       max_task_ = max_task_ + 1;
@@ -194,6 +200,7 @@ namespace coroutine
   }
 
   bool EpollScheduler::Run() {
+    //必要之举，例如在epoll_wait之前需要要将lisentfd加入到epollfd
     ConsumeTodoList();
 
     struct epoll_event *events = (struct epoll_event*) calloc(max_task_, sizeof(struct epoll_event));
@@ -227,14 +234,15 @@ namespace coroutine
         }
 
         if (closed_) {
-          ResumeAll();
+          ResumeAll(EpollREvent_Close);
           break;
         }
 
+        //调度由于这一轮epoll_wait唤醒的协程添加的任务
         ConsumeTodoList();
         DealwithTimeout(next_timeout);
       } else if (errno != EINTR) {
-        ResumeAll();
+        ResumeAll(EpollREvent_Error);
         break;
       }
 
@@ -244,6 +252,36 @@ namespace coroutine
     free(events);
 
     return true;
+  }
+
+  void EpollScheduler::AddTimer(CoContextSocket_t *socket, const int timeout_ms) {
+    RemoveTimer(socket->timer_id);
+
+    if (timeout_ms == -1) {
+      timer_.AddTimer(std::numeric_limits<uint64_t>::max(), socket);
+    } else {
+      timer_.AddTimer(Timer::GetSteadyClockMS() + timerout_ms, socket);
+    }
+  }
+
+  void EpollScheduler::RemoveTimer(const size_t timer_id) {
+    if (timer_id > 0) {
+      timer_.RemoveTimer(timer_id);
+    }
+  }
+
+  void EpollScheduler::DealwithTimeout(int &next_timeout) {
+    while (true) {
+      next_timeout = timer_.GetNextTimeout();
+
+      if (0 != next_timeout) {
+        break;
+      }
+
+      CoContextSocket_t *socket = timer_.PopTimeout();
+      socket->waited_events = EpollREvent_Timeout;
+      runtime_.Resume(socket->coroutine_id);
+    }
   }
 
   void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id)
