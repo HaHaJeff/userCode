@@ -139,6 +139,7 @@ namespace coroutine
 
     fcntl(fd, F_SETFL, O_NONBLOCK);
 
+    //TODO: maybe bug
     no_delay ? setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char*)&tmp, sizeof(tmp));
 
     socket->scheduler = this;
@@ -281,6 +282,83 @@ namespace coroutine
       CoContextSocket_t *socket = timer_.PopTimeout();
       socket->waited_events = EpollREvent_Timeout;
       runtime_.Resume(socket->coroutine_id);
+    }
+  }
+
+  int CoContextPoll(CoContextSocket_t &socket, int events, int *revents, const int timeout_ms) {
+    int ret{-1};
+
+    socket.coroutine_id = socket.scheduler->GetCurrentCoroutine();
+
+    socket.event.events = events;
+
+    socket.scheduler->AddTimer(&socket, timeout_ms);
+    epoll_ctl(socket.epoll_fd, EPOLL_CTL_ADD, socket.socket, &socket.event);
+
+    //回到主协程 执行Run()，epoll_wait，调度方式为星型调度;
+    socket.scheduler->YieldTask();
+
+    epoll_ctl(socket.epoll_fd, EPOLL_CTL_DEL, socket.socket, &socket.event);
+    socket.scheduler->RemoveTimer(socket.timer_id);
+
+    *revents = socket.waited_events;
+
+    if ((*revents) > 0) {
+      if ((*revents) & events) {
+        ret = 1;
+      } else {
+        errno = EINVAL;
+        ret = 0;
+      }
+    } else if ((*revents) == EpollREvent_Timeout) {
+      errno = ETIMEDOUT;
+      ret = 0;
+    } else if ((*revents) == EpollREvent_Error) {
+      errno = ECONNREFUSED;
+      ret = -1;
+    } else {
+      errno = 0;
+      ret = -1;
+    }
+
+    return ret;
+  }
+
+  //connect 不同于其他慢速系统调用，在产生信号中断后，再次调用connect会导致EADDRINUSE错误
+  //两种解决方式：
+  //1: 直接close调用
+  //
+  int CoContextConnect(CoContextSocket_t &socket, const struct sockaddr *addr, socklen_t addrlen) {
+    int ret = connect(socket.socket, addr, addrlen);
+
+    if (0 != ret) {
+      if (EAGAIN != errno && EINPROGRESS != errno) {
+        return -1;
+      }
+
+      int revents = 0;
+      if (CoContextPoll(socket, EPOLLOUT, &revents, socket.connect_timeout_ms) > 0) {
+        ret = 0;
+      } else
+        ret = -1;
+    }
+
+    return ret;
+  }
+
+  int CoContextAccept(CoContextSocket_t &socket, struct sockaddr *addr, socklen_t 8addrlen) {
+    int ret = accept(socket.socket, addr, addrlen);
+    if (ret < 0) {
+      if (EAGAIN != errno && EWOULDBLOCK != errno) {
+        return -1;
+      }
+
+      int revents = 0;
+      if (CoContextPoll(socket, EPOLLIN, &revents, -1) > 0) {
+        ret = accept(socket.socket, addr, addrlen);
+      } else {
+        ret = -1;
+      }
     }
   }
 

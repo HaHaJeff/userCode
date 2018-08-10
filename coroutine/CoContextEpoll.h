@@ -19,9 +19,6 @@ namespace coroutine
   typedef std::function<void()> CoContextHandlerAcceptedFdFunc_t;
   typedef std::function<void()> CoContextHandlerNewRequest_t;
 
-  void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id);
-
-  CoContextSocket_t *NewCoContextSocket();
 
   //EpollScheduler run forever, EpollNotify is used to close EpollScheduler
   //通过pipe_fd机制来结束Run的while(true)
@@ -97,6 +94,40 @@ namespace coroutine
       EpollNotifier epoll_wake_up_;
   };
 
+  size_t CoContextSocketTimerID(CoContextSocket_t &socket);
 
+  void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id);
+
+  CoContextSocket_t *NewCoContextSocket();
+
+  int CoContextPoll(CoContextSocket_t &socket, int events, int *revents, const int timeout_ms);
+
+  int CoContextConnect(CoContextSocket_t &socket, const struct sockaddr *addr, socklen_t *addrlen);
+
+  int CoContextAccept(CoContextSocket_t &socket, struct sockaddr *addr, socklen_t *addrlen);
+
+  ssize_t CoContextRecv(CoContextSocket_t &socket, void *buf, size_t len, const int flags);
+
+  ssize_t CoContextSend(CoContextSocket_t &socket, void *buf, size_t len, const int flags);
+
+  ssize_t CoContextSend(CoContextSocket_t &socket, const void *buf, size_t len, const int flags);
+
+  int CoContextClose(CoContextSocket_t &socket);
+
+  void CoContextSetConnectTimeout(CoContextSocket_t &socket, const int connect_timeout_ms);
+
+  void CoContextSetSocketTimeout(CoContextSocket_t &socket, const int socket_timeout_ms);
+
+  int CoContextSocketFd(CoContextSocket_t &socket);
+
+  void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id);
+
+  void CoContextSetArgs(CoContextSocket_t &socket, void *args);
+
+  void CoContextGetArgs(CoContextSocket_t &socket);
+
+  void CoContextWait(CoContextSocket_t &socket);
+
+  bool IsCoContextDestory(CoContextSocket_t &socket);
 
 } // namespace coroutine
