@@ -327,7 +327,10 @@ namespace coroutine
   //connect 不同于其他慢速系统调用，在产生信号中断后，再次调用connect会导致EADDRINUSE错误
   //两种解决方式：
   //1: 直接close调用
-  //
+  //2: 使用多路复用，当连接成功建立时，描述符变为可写；当连接建立遇到错误时，描述符变为可读又可写
+  //所有使用多路复用观测链接是否建立成功时还需要用getsockopt对fd进行测试
+  //man connect note表明：要完成一个可移植的程序，当connect失败后，应该关闭fd
+  //并且reconect
   int CoContextConnect(CoContextSocket_t &socket, const struct sockaddr *addr, socklen_t addrlen) {
     int ret = connect(socket.socket, addr, addrlen);
 
@@ -337,6 +340,7 @@ namespace coroutine
       }
 
       int revents = 0;
+      //忽略了getsockopt
       if (CoContextPoll(socket, EPOLLOUT, &revents, socket.connect_timeout_ms) > 0) {
         ret = 0;
       } else
@@ -361,6 +365,8 @@ namespace coroutine
       }
     }
   }
+
+
 
   void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id)
   {
