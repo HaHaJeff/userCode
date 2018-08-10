@@ -2,11 +2,10 @@
 
 #include <cstddef>
 #include <queue>
-#include <function>
 #include <utility>
 
 #include "CoContextRuntime.h"
-#include "timer.h"
+#include "Timer.h"
 
 namespace coroutine
 {

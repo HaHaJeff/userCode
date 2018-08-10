@@ -1,5 +1,4 @@
 #include "CoContextSys.h"
-#include "CoUtil.h"
 
 //讲CoContextSys对象保存在ucontext_t中，在makecontext中传递一个回调函数，参数为两个int类型
 //而在64bit系统中，需要讲CoContextSys的地址分为两个intptr_t类型传入，在回调函数中将其复原

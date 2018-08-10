@@ -2,8 +2,8 @@ CXX=g++
 CC=gcc
 C_FLAGS+=-g -std=c++11
 
-TEST_TARGETS = TestCoContextSys TestCoContextRuntime TestCoUtil TestTimer
-SRCS=CoContext.cc CoContextSys.cc CoContextRuntime.cc CoUtil.cc CoContextEpoll.cc Timer.cc
+TEST_TARGETS = TestCoContextSys TestCoContextRuntime TestCoContextUtil TestTimer
+SRCS=CoContext.cc CoContextSys.cc CoContextRuntime.cc CoContextUtil.cc CoContextEpoll.cc Timer.cc
 OBJS=$(patsubst %.cc, %.o, $(SRCS))
 
 all : $(OBJS) $(TEST_TARGETS) 
@@ -20,7 +20,7 @@ TestCoContextRuntime : TestCoContextRuntime.cc
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) $^ $(OBJS) -o $@ $(C_FLAGS)
 
-TestCoUtil : TestCoUtil.cc
+TestCoContextUtil : TestCoContextUtil.cc
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) $^ $(OBJS) -o $@ $(C_FLAGS)
 
