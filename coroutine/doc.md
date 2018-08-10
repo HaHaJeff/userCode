@@ -22,6 +22,8 @@
 - getcontext得到当前的活动上下文
 - setcontext(ucp)将ucp设置为当前的上下文。
 
+**采用星型调度方式，即每个协成运行完毕后切换回主协程，这种属于公平调度方式**
+
 ### CoContext类
 抽象类，
 - Virtual void Make(CoFunc_t func, void* args) = 0;
@@ -53,5 +55,36 @@ static CoContext* DoCreate(size_t stack_size, CoFunc_t func, void* args, CoDoneC
 ```
 
 ###CoContextRuntime
+- 封装ContextItem对Context进行管理，next_done_item将空闲的Context串起来，可以减少Context的创建开销
+```
+Create(CoFunc_t, void *args);  //创建协程上下文，如果context_list_中的first_done_item_ != -1，则不需要创建context，可以完成context的复用
+bool Yield();                  //切换当前协程为main协程
+bool Resume(size_t index);     //将main协程切换回index对应的协程
+struct ContextItem {
+	ContextItem() {
+		context = nullptr;
+		next_done_item = -1;
+	}
+	CoContext *context;
+	int next_done_item;
+	int status;
+};
 
+vector<ContextItem> context_list_;
+first_done_item_;
+```
 
+###CoContextUtil
+栈的制作
+```
+CoStackMemory
+使用getpagesize()对齐
+使用mmap内存映射节约内存的使用
+使用mprotect在stack之间进行内存保护
+```
+
+###CoContextEpoll
+```
+//epoll_wait返回可读描述符，调度对应描述符对应的处理逻辑
+void Run();
+```
