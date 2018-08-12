@@ -3,7 +3,7 @@ CC=gcc
 C_FLAGS+=-g -std=c++11
 
 TEST_TARGETS = TestCoContextSys TestCoContextRuntime TestCoContextUtil TestTimer
-SRCS=CoContext.cc CoContextSys.cc CoContextRuntime.cc CoContextUtil.cc CoContextEpoll.cc Timer.cc
+SRCS=CoContext.cc CoContextSys.cc CoContextRuntime.cc CoContextUtil.cc Timer.cc CoContextEpoll.cc 
 OBJS=$(patsubst %.cc, %.o, $(SRCS))
 
 all : $(OBJS) $(TEST_TARGETS) 

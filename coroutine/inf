@@ -1,0 +1,415 @@
+Compiling CoContextEpoll.cc ==> CoContextEpoll.o...
+g++ -c CoContextEpoll.cc -o CoContextEpoll.o -g -std=c++11
+CoContextEpoll.cc: In member function ‘coroutine::CoContextSocket_t* coroutine::EpollScheduler::CreateSocket(int, int, int, bool)’:
+CoContextEpoll.cc:141:88: error: invalid application of ‘sizeof’ to incomplete type ‘coroutine::CoContextSocket_t {aka CoContextSocket}’
+     CoContextSocket_t *socket = (CoContextSocket_t *)calloc(1, sizeof(CoContextSocket_t));
+                                                                                        ^
+CoContextEpoll.cc:153:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->scheduler = this;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:154:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->epoll_fd = epoll_fd_;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:155:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->event.data.ptr = socket;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:157:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->socket = fd;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:158:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->connect_timeout_ms = connect_timeout_ms;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:159:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->socket_timeout_ms =socket_timeout_ms;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:161:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->waited_events = 0;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:162:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket->args = nullptr;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In member function ‘void coroutine::EpollScheduler::ResumeAll(int)’:
+CoContextEpoll.cc:190:13: error: invalid use of incomplete type ‘struct CoContextSocket’
+       socket->waited_events = flag;
+             ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘struct CoContextSocket’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:191:29: error: invalid use of incomplete type ‘struct CoContextSocket’
+       runtime_.Resume(socket->coroutine_id);
+                             ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘struct CoContextSocket’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In member function ‘bool coroutine::EpollScheduler::Run()’:
+CoContextEpoll.cc:225:17: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+           socket->waited_events = events[i].events;
+                 ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:227:33: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+           runtime_.Resume(socket->coroutine_id);
+                                 ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:233:35: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+             runtime_.Resume(socket->coroutine_id);
+                                   ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In member function ‘void coroutine::EpollScheduler::AddTimer(coroutine::CoContextSocket_t*, int)’:
+CoContextEpoll.cc:267:23: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     RemoveTimer(socket->timer_id);
+                       ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In member function ‘void coroutine::EpollScheduler::DealwithTimeout(int&)’:
+CoContextEpoll.cc:291:13: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+       socket->waited_events = EpollREvent_Timeout;
+             ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:292:29: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+       runtime_.Resume(socket->coroutine_id);
+                             ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘int coroutine::CoContextPoll(coroutine::CoContextSocket&, int, int*, int)’:
+CoContextEpoll.cc:303:51: error: no matching function for call to ‘coroutine::EpollScheduler::AddTimer(coroutine::CoContextSocket*, const int&)’
+     socket.scheduler->AddTimer(&socket, timeout_ms);
+                                                   ^
+CoContextEpoll.cc:266:8: note: candidate: void coroutine::EpollScheduler::AddTimer(coroutine::CoContextSocket_t*, int)
+   void EpollScheduler::AddTimer(CoContextSocket_t *socket, const int timeout_ms) {
+        ^
+CoContextEpoll.cc:266:8: note:   no known conversion for argument 1 from ‘coroutine::CoContextSocket*’ to ‘coroutine::CoContextSocket_t* {aka CoContextSocket*}’
+CoContextEpoll.cc: In function ‘int coroutine::CoContextConnect(coroutine::CoContextSocket_t&, const sockaddr*, socklen_t)’:
+CoContextEpoll.cc:343:29: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     int ret = connect(socket.socket, addr, addrlen);
+                             ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:353:59: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+       if (CoContextPoll(socket, EPOLLOUT, &revents, socket.connect_timeout_ms) > 0) {
+                                                           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘int coroutine::CoContextAccept(coroutine::CoContextSocket_t&, sockaddr*, socklen_t*)’:
+CoContextEpoll.cc:363:28: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     int ret = accept(socket.socket, addr, addrlen);
+                            ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:371:28: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+         ret = accept(socket.socket, addr, addrlen);
+                            ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘ssize_t coroutine::CoContextRead(coroutine::CoContextSocket_t&, void*, size_t, int)’:
+CoContextEpoll.cc:379:26: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     int ret = read(socket.socket, buf, len);
+                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:383:58: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+       if (CoContextPoll(socket, EPOLLIN, &revents, socket.socket_timeout_ms) > 0) {
+                                                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:384:26: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+         ret = read(socket.socket, buf, len);
+                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘ssize_t coroutine::CoContextRecv(coroutine::CoContextSocket_t&, void*, size_t, int)’:
+CoContextEpoll.cc:394:26: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     int ret = recv(socket.socket, buf, len, flags);
+                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:398:58: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+       if (CoContextPoll(socket, EPOLLIN, &revents, socket.socket_timeout_ms) > 0) {
+                                                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:399:26: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+         ret = recv(socket.socket, buf, len, flags);
+                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘ssize_t coroutine::CoContextSend(coroutine::CoContextSocket_t&, const void*, size_t, int)’:
+CoContextEpoll.cc:409:26: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     int ret = send(socket.socket, buf, len, flags);
+                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:413:58: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+       if (CoContextPoll(socket, EPOLLIN, &revents, socket.socket_timeout_ms) > 0) {
+                                                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:414:26: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+         ret = send(socket.socket, buf, len, flags);
+                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘int coroutine::CoContextClose(coroutine::CoContextSocket_t&)’:
+CoContextEpoll.cc:424:15: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     if (socket.socket >= 0) {
+               ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:425:26: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+       return close(socket.socket);
+                          ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘void coroutine::CoContextSetConnectTimeout(coroutine::CoContextSocket_t&, int)’:
+CoContextEpoll.cc:431:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.connect_timeout_ms = connect_timeout_ms;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘void coroutine::CoContextSetSocketTimeout(coroutine::CoContextSocket_t&, int)’:
+CoContextEpoll.cc:435:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.socket_timeout_ms = socket_timeout_ms;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘int coroutine::CoContextSocketFd(coroutine::CoContextSocket_t&)’:
+CoContextEpoll.cc:439:18: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     return socket.socket;
+                  ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘size_t coroutine::CoContextSocketTimerID(coroutine::CoContextSocket_t&)’:
+CoContextEpoll.cc:443:18: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     return socket.timer_id;
+                  ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘void coroutine::CoContextSocketSetTimerID(coroutine::CoContextSocket_t&, size_t)’:
+CoContextEpoll.cc:448:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.timer_id = timer_id;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘coroutine::CoContextSocket_t* coroutine::NewCoContextSocket()’:
+CoContextEpoll.cc:455:88: error: invalid application of ‘sizeof’ to incomplete type ‘coroutine::CoContextSocket_t {aka CoContextSocket}’
+     CoContextSocket_t *socket = (CoContextSocket_t *)calloc(1, sizeof(CoContextSocket_t));
+                                                                                        ^
+CoContextEpoll.cc: In function ‘void coroutine::CoContextSetArgs(coroutine::CoContextSocket_t&, void*)’:
+CoContextEpoll.cc:460:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.args = args;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘void* coroutine::CoContextGetArgs(coroutine::CoContextSocket_t&)’:
+CoContextEpoll.cc:463:51: error: ambiguating new declaration of ‘void* coroutine::CoContextGetArgs(coroutine::CoContextSocket_t&)’
+   void* CoContextGetArgs(CoContextSocket_t &socket) {
+                                                   ^
+In file included from CoContextEpoll.cc:1:0:
+CoContextEpoll.h:129:8: note: old declaration ‘void coroutine::CoContextGetArgs(coroutine::CoContextSocket_t&)’
+   void CoContextGetArgs(CoContextSocket_t &socket);
+        ^
+CoContextEpoll.cc:464:18: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     return socket.args;
+                  ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘void coroutine::CoContextWait(coroutine::CoContextSocket_t&, int)’:
+CoContextEpoll.cc:468:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.coroutine_id = socket.scheduler->GetCurrentCoroutine();
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:468:33: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.coroutine_id = socket.scheduler->GetCurrentCoroutine();
+                                 ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:469:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.scheduler->AddTimer(&socket, timeout_ms);
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:470:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.scheduler->YieldTask();
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:471:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.scheduler->RemoveTimer(socket.timer_id);
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc:471:41: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.scheduler->RemoveTimer(socket.timer_id);
+                                         ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘void coroutine::CoContextLazyDestory(coroutine::CoContextSocket_t&)’:
+CoContextEpoll.cc:475:11: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     socket.coroutine_id = -1;
+           ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+CoContextEpoll.cc: In function ‘bool coroutine::IsCoContextDestory(coroutine::CoContextSocket_t&)’:
+CoContextEpoll.cc:479:18: error: invalid use of incomplete type ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+     return socket.coroutine_id == -1;
+                  ^
+In file included from CoContextEpoll.h:10:0,
+                 from CoContextEpoll.cc:1:
+Timer.h:9:16: note: forward declaration of ‘coroutine::CoContextSocket_t {aka struct CoContextSocket}’
+ typedef struct CoContextSocket CoContextSocket_t;
+                ^
+Makefile:12: recipe for target 'CoContextEpoll.o' failed
+make: *** [CoContextEpoll.o] Error 1
