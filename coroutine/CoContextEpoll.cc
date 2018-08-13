@@ -14,7 +14,7 @@
 namespace coroutine
 {
 
-  struct CoContextSocket {
+  typedef struct CoContextSocket {
     EpollScheduler *scheduler;
     int coroutine_id;
 
@@ -28,7 +28,7 @@ namespace coroutine
     size_t timer_id;
     struct epoll_event event;
     void *args;
-  };
+  }CoContextSocket_t;
 
   EpollNotifier::EpollNotifier(EpollScheduler *scheduler) : scheduler_(scheduler)
   {
@@ -56,7 +56,7 @@ namespace coroutine
 
   void EpollNotifier::Func()
   {
-    CoContextSocket *socket{scheduler_->CreateSocket(pipe_fds_[0], -1, -1, false)};
+    CoContextSocket_t *socket{scheduler_->CreateSocket(pipe_fds_[0], -1, -1, false)};
     char tmp[2] = {0};
     while (true)
     {
@@ -137,8 +137,8 @@ namespace coroutine
     return runtime_.GetCurrentCoroutine();
   }
 
-  CoContextSocket* EpollScheduler::CreateSocket(const int fd, const int socket_timeout_ms, const int connect_timeout_ms, const bool no_delay) {
-    CoContextSocket *socket = (CoContextSocket *)calloc(1, sizeof(CoContextSocket));
+  CoContextSocket_t* EpollScheduler::CreateSocket(const int fd, const int socket_timeout_ms, const int connect_timeout_ms, const bool no_delay) {
+    CoContextSocket_t *socket = (CoContextSocket_t *)calloc(1, sizeof(CoContextSocket_t));
     int tmp = no_delay ? 1 : 0;
 
     fcntl(fd, F_SETFL, O_NONBLOCK);
@@ -185,7 +185,7 @@ namespace coroutine
   }
 
   void EpollScheduler::ResumeAll(int flag) {
-    std::vector<CoContextSocket*> exist_socket_list = timer_.GetSocketList();
+    std::vector<CoContextSocket_t*> exist_socket_list = timer_.GetSocketList();
     for (auto &socket : exist_socket_list) {
       socket->waited_events = flag;
       runtime_.Resume(socket->coroutine_id);
@@ -221,14 +221,14 @@ namespace coroutine
 
       if (nfds != -1) {
         for (int i = 0; i < nfds; i++) {
-          CoContextSocket *socket = (CoContextSocket*) events[i].data.ptr;
+          CoContextSocket_t *socket = (CoContextSocket_t*) events[i].data.ptr;
           socket->waited_events = events[i].events;
 
           runtime_.Resume(socket->coroutine_id);
         }
 
         if (active_socket_func_ != nullptr) {
-          CoContextSocket *socket = nullptr;
+          CoContextSocket_t *socket = nullptr;
           while ((socket = active_socket_func_()) != nullptr) {
             runtime_.Resume(socket->coroutine_id);
           }
@@ -263,7 +263,7 @@ namespace coroutine
     return true;
   }
 
-  void EpollScheduler::AddTimer(CoContextSocket *socket, const int timeout_ms) {
+  void EpollScheduler::AddTimer(CoContextSocket_t *socket, const int timeout_ms) {
     RemoveTimer(socket->timer_id);
 
     if (timeout_ms == -1) {
@@ -287,13 +287,13 @@ namespace coroutine
         break;
       }
 
-      CoContextSocket *socket = timer_.PopTimeout();
+      CoContextSocket_t *socket = timer_.PopTimeout();
       socket->waited_events = EpollREvent_Timeout;
       runtime_.Resume(socket->coroutine_id);
     }
   }
 
-  int CoContextPoll(CoContextSocket &socket, int events, int *revents, const int timeout_ms) {
+  int CoContextPoll(CoContextSocket_t &socket, int events, int *revents, const int timeout_ms) {
     int ret{-1};
 
     socket.coroutine_id = socket.scheduler->GetCurrentCoroutine();
@@ -339,7 +339,7 @@ namespace coroutine
   //所有使用多路复用观测链接是否建立成功时还需要用getsockopt对fd进行测试
   //man connect note表明：要完成一个可移植的程序，当connect失败后，应该关闭fd
   //并且reconect
-  int CoContextConnect(CoContextSocket &socket, const struct sockaddr *addr, socklen_t addrlen) {
+  int CoContextConnect(CoContextSocket_t &socket, const struct sockaddr *addr, socklen_t addrlen) {
     int ret = connect(socket.socket, addr, addrlen);
 
     if (0 != ret) {
@@ -359,7 +359,7 @@ namespace coroutine
     return ret;
   }
 
-  int CoContextAccept(CoContextSocket &socket, struct sockaddr *addr, socklen_t *addrlen) {
+  int CoContextAccept(CoContextSocket_t &socket, struct sockaddr *addr, socklen_t *addrlen) {
     int ret = accept(socket.socket, addr, addrlen);
     if (ret < 0) {
       if (EAGAIN != errno && EWOULDBLOCK != errno) {
@@ -375,7 +375,7 @@ namespace coroutine
     }
   }
 
-  ssize_t CoContextRead(CoContextSocket &socket, void *buf, size_t len, const int flags) {
+  ssize_t CoContextRead(CoContextSocket_t &socket, void *buf, size_t len, const int flags) {
     int ret = read(socket.socket, buf, len);
 
     if (ret < 0 && errno == EAGAIN) {
@@ -390,7 +390,7 @@ namespace coroutine
     return ret;
   }
 
-  ssize_t CoContextRecv(CoContextSocket &socket, void *buf, size_t len, const int flags) {
+  ssize_t CoContextRecv(CoContextSocket_t &socket, void *buf, size_t len, const int flags) {
     int ret = recv(socket.socket, buf, len, flags);
 
     if (ret < 0 && errno == EAGAIN) {
@@ -405,7 +405,7 @@ namespace coroutine
     return ret;
   }
 
-  ssize_t CoContextSend(CoContextSocket &socket, const void *buf, size_t len, const int flags) {
+  ssize_t CoContextSend(CoContextSocket_t &socket, const void *buf, size_t len, const int flags) {
     int ret = send(socket.socket, buf, len, flags);
 
     if (ret < 0 && errno == EAGAIN) {
@@ -420,62 +420,62 @@ namespace coroutine
     return ret;
   }
 
-  int CoContextClose(CoContextSocket &socket) {
+  int CoContextClose(CoContextSocket_t &socket) {
     if (socket.socket >= 0) {
       return close(socket.socket);
     }
     return -1;
   }
 
-  void CoContextSetConnectTimeout(CoContextSocket &socket, const int connect_timeout_ms) {
+  void CoContextSetConnectTimeout(CoContextSocket_t &socket, const int connect_timeout_ms) {
     socket.connect_timeout_ms = connect_timeout_ms;
   }
 
-  void CoContextSetSocketTimeout(CoContextSocket &socket, const int socket_timeout_ms) {
+  void CoContextSetSocketTimeout(CoContextSocket_t &socket, const int socket_timeout_ms) {
     socket.socket_timeout_ms = socket_timeout_ms;
   }
 
-  int CoContextSocketFd(CoContextSocket &socket) {
+  int CoContextSocketFd(CoContextSocket_t &socket) {
     return socket.socket;
   }
 
-  size_t CoContextSocketTimerID(CoContextSocket &socket) {
+  size_t CoContextSocketTimerID(CoContextSocket_t &socket) {
     return socket.timer_id;
   }
 
-  void CoContextSocketSetTimerID(CoContextSocket &socket, size_t timer_id)
+  void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id)
   {
     socket.timer_id = timer_id;
   }
 
   //memory should free by user
-  CoContextSocket *NewCoContextSocket()
+  CoContextSocket_t *NewCoContextSocket()
   {
     //allocate an array, and set memory to zero
-    CoContextSocket *socket = (CoContextSocket *)calloc(1, sizeof(CoContextSocket));
+    CoContextSocket_t *socket = (CoContextSocket_t *)calloc(1, sizeof(CoContextSocket_t));
     return socket;
   }
 
-  void CoContextSetArgs(CoContextSocket &socket, void *args) {
+  void CoContextSetArgs(CoContextSocket_t &socket, void *args) {
     socket.args = args;
   }
 
-  void* CoContextGetArgs(CoContextSocket &socket) {
+  void* CoContextGetArgs(CoContextSocket_t &socket) {
     return socket.args;
   }
 
-  void CoContextWait(CoContextSocket &socket, const int timeout_ms) {
+  void CoContextWait(CoContextSocket_t &socket, const int timeout_ms) {
     socket.coroutine_id = socket.scheduler->GetCurrentCoroutine();
     socket.scheduler->AddTimer(&socket, timeout_ms);
     socket.scheduler->YieldTask();
     socket.scheduler->RemoveTimer(socket.timer_id);
   }
 
-  void CoContextLazyDestory(CoContextSocket &socket) {
+  void CoContextLazyDestory(CoContextSocket_t &socket) {
     socket.coroutine_id = -1;
   }
 
-  bool IsCoContextDestory(CoContextSocket &socket) {
+  bool IsCoContextDestory(CoContextSocket_t &socket) {
     return socket.coroutine_id == -1;
   }
 } // namespace coroutine

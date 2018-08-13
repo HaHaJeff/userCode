@@ -85,7 +85,7 @@ void Timer::heap_down(const size_t begin_idx) {
     CoContextSocketSetTimerID(*timer_heap_[now_idx].socket_, now_idx + 1);
 }
 
-void Timer::AddTimer(uint64_t abs_time, CoContextSocket *socket) {
+void Timer::AddTimer(uint64_t abs_time, CoContextSocket_t *socket) {
     TimerObj obj(abs_time, socket);
     timer_heap_.push_back(obj);
     heap_up(timer_heap_.size());
@@ -134,12 +134,12 @@ const int Timer::GetNextTimeout() const {
     return next_timeout;
 }
 
-CoContextSocket* Timer::PopTimeout() {
+CoContextSocket_t* Timer::PopTimeout() {
     if (timer_heap_.empty()) {
         return nullptr;
     }
 
-    CoContextSocket *socket{timer_heap_[0].socket_};
+    CoContextSocket_t *socket{timer_heap_[0].socket_};
     CoContextSocketSetTimerID(*socket, 0);
 
     std::swap(timer_heap_[0], timer_heap_[timer_heap_.size()-1]);
@@ -151,8 +151,8 @@ CoContextSocket* Timer::PopTimeout() {
     return socket;
 }
 
-std::vector<CoContextSocket*> Timer::GetSocketList() {
-    std::vector<CoContextSocket*> socket_list;
+std::vector<CoContextSocket_t*> Timer::GetSocketList() {
+    std::vector<CoContextSocket_t*> socket_list;
     for (auto &obj : timer_heap_) {
         socket_list.push_back(obj.socket_);
     }

@@ -5,7 +5,7 @@ using namespace coroutine;
 int main()
 {
   Timer timer;
-  CoContextSocket *socket = NewCoContextSocket();
+  CoContextSocket_t *socket = NewCoContextSocket();
   timer.AddTimer(0, socket);
 
   timer.RemoveTimer(1);

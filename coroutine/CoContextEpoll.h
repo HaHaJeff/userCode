@@ -12,12 +12,12 @@
 namespace coroutine
 {
 
-  struct CoContextSocket;
+  typedef struct CoContextSocket CoContextSocket_t;
 
   class EpollScheduler;
 
   typedef std::pair<EpollScheduler *, int> EpollArgs_t;
-  typedef std::function<CoContextSocket *()> CoContextActiveSocket_t;
+  typedef std::function<CoContextSocket_t *()> CoContextActiveSocket_t;
   typedef std::function<void()> CoContextHandlerAcceptedFdFunc_t;
   typedef std::function<void()> CoContextHandlerNewRequest_t;
 
@@ -51,7 +51,7 @@ namespace coroutine
 
       void AddTask(CoFunc_t func, void *args);
 
-      CoContextSocket *CreateSocket(const int fd, const int socket_timeout_ms = 5000, const int connect_timeout_ms = 200, const bool no_delay = true);
+      CoContextSocket_t *CreateSocket(const int fd, const int socket_timeout_ms = 5000, const int connect_timeout_ms = 200, const bool no_delay = true);
 
       void SetActiveSocketFunc(CoContextActiveSocket_t active_socket_func);
       void SetHandlerAcceptedFdFunc(CoContextHandlerAcceptedFdFunc_t handler_accepted_fd_func);
@@ -65,7 +65,7 @@ namespace coroutine
 
       int GetCurrentCoroutine();
 
-      void AddTimer(CoContextSocket *socket, const int timeout_ms);
+      void AddTimer(CoContextSocket_t *socket, const int timeout_ms);
       void RemoveTimer(const size_t timer_id);
       void DealwithTimeout(int &next_timeout);
 
@@ -96,42 +96,42 @@ namespace coroutine
       EpollNotifier epoll_wake_up_;
   };
 
-  int CoContextPoll(CoContextSocket &socket, int events, int *revents, const int timeout_ms);
+  int CoContextPoll(CoContextSocket_t &socket, int events, int *revents, const int timeout_ms);
 
-  int CoContextConnect(CoContextSocket &socket, const struct sockaddr *addr, socklen_t *addrlen);
+  int CoContextConnect(CoContextSocket_t &socket, const struct sockaddr *addr, socklen_t *addrlen);
 
-  int CoContextAccept(CoContextSocket &socket, struct sockaddr *addr, socklen_t *addrlen);
+  int CoContextAccept(CoContextSocket_t &socket, struct sockaddr *addr, socklen_t *addrlen);
 
-  ssize_t CoContextRecv(CoContextSocket &socket, void *buf, size_t len, const int flags);
+  ssize_t CoContextRecv(CoContextSocket_t &socket, void *buf, size_t len, const int flags);
 
-  ssize_t CoContextRead(CoContextSocket &socket, void *buf, size_t len, const int flags);
+  ssize_t CoContextRead(CoContextSocket_t &socket, void *buf, size_t len, const int flags);
 
-  ssize_t CoContextSend(CoContextSocket &socket, const void *buf, size_t len, const int flags);
+  ssize_t CoContextSend(CoContextSocket_t &socket, const void *buf, size_t len, const int flags);
 
-  int CoContextClose(CoContextSocket &socket);
+  int CoContextClose(CoContextSocket_t &socket);
 
-  void CoContextSetConnectTimeout(CoContextSocket &socket, const int connect_timeout_ms);
+  void CoContextSetConnectTimeout(CoContextSocket_t &socket, const int connect_timeout_ms);
 
-  void CoContextSetSocketTimeout(CoContextSocket &socket, const int socket_timeout_ms);
+  void CoContextSetSocketTimeout(CoContextSocket_t &socket, const int socket_timeout_ms);
 
-  int CoContextSocketFd(CoContextSocket &socket);
+  int CoContextSocketFd(CoContextSocket_t &socket);
 
-  void CoContextSocketSetTimerID(CoContextSocket &socket, size_t timer_id);
+  void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id);
 
-  size_t CoContextSocketTimerID(CoContextSocket &socket);
+  size_t CoContextSocketTimerID(CoContextSocket_t &socket);
 
-  void CoContextSocketSetTimerID(CoContextSocket &socket, size_t timer_id);
+  void CoContextSocketSetTimerID(CoContextSocket_t &socket, size_t timer_id);
 
-  CoContextSocket *NewCoContextSocket();
+  CoContextSocket_t *NewCoContextSocket();
 
-  void CoContextSetArgs(CoContextSocket &socket, void *args);
+  void CoContextSetArgs(CoContextSocket_t &socket, void *args);
 
-  void* CoContextGetArgs(CoContextSocket &socket);
+  void* CoContextGetArgs(CoContextSocket_t &socket);
 
-  void CoContextWait(CoContextSocket &socket);
+  void CoContextWait(CoContextSocket_t &socket);
 
-  void CoContextLazyDestory(CoContextSocket &socket);
+  void CoContextLazyDestory(CoContextSocket_t &socket);
 
-  bool IsCoContextDestory(CoContextSocket &socket);
+  bool IsCoContextDestory(CoContextSocket_t &socket);
 
 } // namespace coroutine
