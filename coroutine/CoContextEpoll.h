@@ -98,7 +98,7 @@ namespace coroutine
 
   int CoContextPoll(CoContextSocket_t &socket, int events, int *revents, const int timeout_ms);
 
-  int CoContextConnect(CoContextSocket_t &socket, const struct sockaddr *addr, socklen_t *addrlen);
+  int CoContextConnect(CoContextSocket_t &socket, const struct sockaddr *addr, socklen_t addrlen);
 
   int CoContextAccept(CoContextSocket_t &socket, struct sockaddr *addr, socklen_t *addrlen);
 
