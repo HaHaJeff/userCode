@@ -13,7 +13,7 @@ void EchoClient(void *args) {
 
   EpollArgs_t *tt= (EpollArgs_t*)args;
 
-  int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TP);
+  int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
   CoContextSocket_t *socket = tt->first->CreateSocket(fd);
 
