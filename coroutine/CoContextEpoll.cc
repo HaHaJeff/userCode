@@ -348,10 +348,15 @@ namespace coroutine
       }
 
       int revents = 0;
-      //忽略了getsockopt
-      //TODO add getsockopt
+      //FIXME:add getsockopt
       if (CoContextPoll(socket, EPOLLOUT, &revents, socket.connect_timeout_ms) > 0) {
-        ret = 0;
+        int error;
+        socklen_t len = sizeof(error);
+        if (getsockopt(socket.socket, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
+          ret = -1;
+        } else {
+          ret = 0;
+        }
       } else
         ret = -1;
     }
