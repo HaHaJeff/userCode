@@ -1,4 +1,5 @@
-#ifndef THREADPOOL_H #define THREADPOOL_H
+#ifndef THREADPOOL_H
+#define THREADPOOL_H
 
 #include <iostream>
 #include <thread>
@@ -6,10 +7,11 @@
 #include <algorithm>
 #include <functional>
 #include <atomic>
+#include <queue>
 
 class ThreadPool {
 public:
-  explicit ThreadPool(std::size_t threads = std::max(4, std::thread::hardware_concurrency() * 2));
+  explicit ThreadPool(std::size_t threads = (std::max)(4u, std::thread::hardware_concurrency() * 2));
 
  // template <class F, class... Args>
  // auto AddTask(F&& f, Args&&... args)-> typename std::result_of<F(Args...)>::type;
@@ -17,8 +19,7 @@ public:
   template <class F, class... Args>
   void AddTask(F&& f, Args&&... args);
 
-  void WaitAll();
-  ~ThreadPoll();
+  ~ThreadPool();
 
 private:
   // work thread
@@ -31,9 +32,8 @@ private:
   bool stop_ = false;
 
   // Sychronization
-  std::mutext mutex_;
-  std::condition_variable producers_;
-  std::condition_variable consumers_;
+  std::mutex mutex_;
+  std::condition_variable condition_;
 };
 
 inline ThreadPool::ThreadPool(std::size_t threads) {
@@ -47,10 +47,13 @@ inline ThreadPool::ThreadPool(std::size_t threads) {
             std::unique_lock<std::mutex> lock(this->mutex_);
 
             //avoid spurious wakeup
-            while (tasks_.empty())
-              consumers_.wait(lock, []{ return !tasks_.empty(); });
+            while (!this->stop_ && tasks_.empty())
+              condition_.wait(lock, [this]{ return this->stop_ || !tasks_.empty(); });
 
-            if (true == stop || tasks_.empty()) return;
+          //  if (true == stop_ || tasks_.empty()) return;
+              if (stop_ && tasks_.empty()) {
+                return;
+              }
 
             //first in first out
             task = std::move(this->tasks_.front());
@@ -58,6 +61,7 @@ inline ThreadPool::ThreadPool(std::size_t threads) {
 
           //  if (this->tasks_.size() + 1 == max_queue_size_ || this->tasks_.empty())
           }
+//          std::cout << "thread_id: " << std::this_thread::get_id() << std::endl;
           task();
         }
         }
@@ -70,28 +74,27 @@ void ThreadPool::AddTask(F&& f, Args&&... args) {
   using return_type = typename std::result_of<F(Args...)>::type;
   auto task = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
 
-  std::unique_lock<std::mutex> lock(mutex_);
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
 
-  while (tasks_.size() >= max_queue_size_) {
-    producers_.wait(lock, []{ return tasks_.size() < max_queue_size_; });
+    while (tasks_.size() >= max_queue_size_) {
+      condition_.wait(lock, [this]{ return tasks_.size() < max_queue_size_; });
+    }
+
+    tasks_.emplace([task]{task();});
   }
-
-  tasks_.emplace([task]{task();});
 
 }
 
 ThreadPool::~ThreadPool() {
-  std::unique_lock<std::mutex> lock(mutex_);
-  stop_ = true;
-  condition_consumers_.notify_all();
-  condition_producers_.notify_all();
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    stop_ = true;
+  }
+  condition_.notify_all();
 
-  condition_consumers_.wait(lock, [this]{ return this->workers_.empty(); });
-}
-
-void ThreadPool::WaitAll() {
-  std::unique_lock<std::mutex> lock(this->mutex_);
-  this->condition_producers_.wait(lock, [this]{ return this->tasks_.empty() };);
+  for (auto &worker: workers_)
+    worker.join();
 }
 
 #endif
