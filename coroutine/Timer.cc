@@ -1,4 +1,5 @@
 #include "Timer.h"
+#include "CoContextEpoll.h"
 
 #include <algorithm>
 #include <chrono>
@@ -11,10 +12,9 @@
 #include <unistd.h>
 #include <cstdint>
 
-#include "CoContextEpoll.h"
-
 using namespace std;
 
+namespace coroutine {
 const uint64_t Timer::GetTimestampMS() {
     auto now_time = chrono::system_clock::now();
     uint64_t now = (chrono::duration_cast<chrono::milliseconds>(now_time.time_since_epoch())).count();
@@ -158,4 +158,6 @@ std::vector<CoContextSocket_t*> Timer::GetSocketList() {
     }
 
     return socket_list;
+}
+
 }

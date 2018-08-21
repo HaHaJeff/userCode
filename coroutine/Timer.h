@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdint>
 
+namespace coroutine {
+
 typedef struct CoContextSocket CoContextSocket_t;
 
 class Timer {
@@ -44,3 +46,5 @@ private:
     };
     std::vector<TimerObj> timer_heap_;
 };
+
+}

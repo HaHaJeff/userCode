@@ -110,4 +110,8 @@ namespace coroutine {
     return unfinished_item_count_ == 0;
   }
 
+  int CoContextRuntime::GetUnfinishedItemCount() const {
+    return unfinished_item_count_;
+  }
+
 }
