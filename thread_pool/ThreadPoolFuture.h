@@ -27,8 +27,6 @@ private:
   std::size_t max_queue_size_ {100000};
   bool stop_{false};
 
-
-
   //TODO: synchronize
   std::condition_variable condition_;
   std::mutex mutex_;
@@ -72,6 +70,14 @@ auto ThreadPool::AddTask(Func&& f, Args&&... args) -> std::future<typename std::
   auto task = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<Func>(f), std::forward<Args>(args)...));
 
   auto result = task->get_future();
+
+  std::unique_lock<std::mutex> lock(mutex_);
+
+  if (tasks_.size() >= max_queue_size_) {
+    condition_.wait(lock, [this](){
+          return tasks_.size() < max_queue_size_ || stop_;
+        });
+  }
 
   tasks_.emplace([task](){
       (*task)();   //lambda std::function<void()>;
