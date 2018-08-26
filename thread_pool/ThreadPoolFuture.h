@@ -28,6 +28,8 @@ private:
   bool stop_{false};
 
 
+
+  //TODO: synchronize
   std::condition_variable condition_;
   std::mutex mutex_;
 };
@@ -72,7 +74,7 @@ auto ThreadPool::AddTask(Func&& f, Args&&... args) -> std::future<typename std::
   auto result = task->get_future();
 
   tasks_.emplace([task](){
-      (*task)();   //std::function<void()>;
+      (*task)();   //lambda std::function<void()>;
       });
 
   condition_.notify_one();
