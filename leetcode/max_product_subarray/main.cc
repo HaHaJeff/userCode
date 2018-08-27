@@ -13,9 +13,9 @@ public:
 		int max{ min };
 		int res{ min };
 		for (int i = 1; i < nums.size(); i++) {
-
+			int tmp_max = max;
 			max = std::max( std::max(max*nums[i], nums[i]), std::max(min*nums[i], nums[i]));
-			min = std::min(std::min(max*nums[i], nums[i]), std::min(min*nums[i], nums[i]));
+			min = std::min(std::min(tmp_max*nums[i], nums[i]), std::min(min*nums[i], nums[i]));
 
 			res = std::max(max, res);
 		}
@@ -26,10 +26,10 @@ public:
 
 int main()
 {
-	vector<int> nums = { 2, 3, -2, 4 , -10, 0, 1999};
+	vector<int> nums = { -4, -3, -2};
 	Solution sol;
 
 	int res = sol.maxProduct(nums);
 
 	std::cout << res << std::endl;
-}s
+}
