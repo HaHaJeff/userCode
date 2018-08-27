@@ -14,7 +14,7 @@ public:
 		return recur(s1, s2, s3, 0, 0, 0, invalid);
 	}
 
-	bool recur(string s1, string s2, string s3, int i, int j, int k, vector<vector<bool>> invalid) {
+	bool recur(string &s1, string &s2, string &s3, int i, int j, int k, vector<vector<bool>> &invalid) {
         if (k == s1.length() + s2.length()) return true;
 		if (invalid[i][j]) return false;
 
