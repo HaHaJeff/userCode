@@ -7,7 +7,7 @@ class Solution {
 public:
 	int rob(vector<int>& nums) {
 		vector<int> dp(nums.size(), 0);
-
+		
 		dp[0] = nums[0];
 		dp[1] = nums[1];
 		dp[2] = dp[0] + nums[2];

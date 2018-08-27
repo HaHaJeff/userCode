@@ -15,6 +15,7 @@ public:
 	}
 
 	bool recur(string s1, string s2, string s3, int i, int j, int k, vector<vector<bool>> invalid) {
+        if (k == s1.length() + s2.length()) return true;
 		if (invalid[i][j]) return false;
 
 		bool valid = (i < s1.length() && s1[i] == s3[k] && recur(s1, s2, s3, i + 1, j, k + 1, invalid)) ||
@@ -30,7 +31,7 @@ int main()
 {
 	string s1 = "aabcc";
 	string s2 = "dbbca";
-	string s3 = "aadbbbaccc";
+	string s3 = "aadbbbccca";
 
 	Solution sol;
 	std::cout << sol.isInterleave(s1, s2, s3) << std::endl;
