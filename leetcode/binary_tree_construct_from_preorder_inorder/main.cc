@@ -16,33 +16,42 @@ using namespace std;
 */
 class Solution {
 public:
+	typedef vector<int>::iterator Iter;
 	TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
 		if (preorder.empty() || inorder.empty()) return nullptr;
 
 		preorder_ = preorder;
 		inorder_ = inorder;
 
-		vector<int>::iterator root_val = preorder_.begin();
-		TreeNode* root = recur(root_val, 0, preorder.size() - 1);
+		int i = 0;
+		TreeNode* root = recur(i, 0, preorder_.size()-1);
 		return root;
 
 	}
 
-	TreeNode* recur(vector<int>::iterator root_val, int start, int end) {
-		if (start == end) {
+	int find_(int start, int end, int val) {
+		int ret = 0;
+		for (int i = start; i <= end; ++i) {
+			if (inorder_[i] == val) {
+				ret = i;
+				break;
+			}
+		}
+		return ret;
+	}
+
+	TreeNode* recur(int& pre_idx, int start, int end) {
+		if (start > end) {
 			return nullptr;
 		}
 
-		TreeNode* root{ new TreeNode(*root_val) };
+		TreeNode* root{ new TreeNode(preorder_[pre_idx]) };
+		int mid = find_(start, end, preorder_[pre_idx++]);
 
-		int mid = find(inorder_.begin()+start, inorder_.begin()+end, *root_val) - inorder_.begin();
-
-		root->left = recur(root_val + 1, start, mid);
-		root->right = recur(root_val + 1, mid + 1, end);
-
+		root->left = recur(pre_idx, start, mid - 1);
+		root->right = recur(pre_idx, mid + 1, end);
 		return root;
 	}
-
 private:
 	vector<int> preorder_;
 	vector<int> inorder_;
@@ -53,8 +62,8 @@ int main()
 
 	Solution sol;
 
-	vector<int> preorder{3,9,20,15,7};
-	vector<int> inorder{ 9,3,15,20,7};
+	vector<int> preorder{3, 6, 9};
+	vector<int> inorder{ 6, 3, 9};
 
 	TreeNode* root = sol.buildTree(preorder, inorder);
 
