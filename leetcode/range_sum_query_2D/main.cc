@@ -1,8 +1,3 @@
-#include <vector>
-#include <iostream>
-
-using namespace std;
-
 // 区域分解法：sumRegion(int row1, int col1, int row2, int col2) = region(row2, col2) - region(row1, col2) - region(row2, col1) + region(row1, col1)
 class NumMatrix {
 public:
@@ -24,7 +19,7 @@ public:
 
 	}
 	int sumRegion(int row1, int col1, int row2, int col2) {
-		return dp_[row2][col2] - dp_[row1-1][col2] - dp_[row2][col1-1] + dp_[row1-1][col1-1];
+		return dp_[row2][col2] - (row1 - 1 < 0 ? 0 : dp_[row1 - 1][col2]) - (col1 - 1 < 0 ? 0 : dp_[row2][col1-1]) + (row1-1 < 0 || col1-1 < 0 ? 0 : dp_[row1-1][col1-1]);
 	}
 
 private:
