@@ -68,7 +68,7 @@ void cbWrite(CircularBuffer* cb,ElemType* elem) {
 }
 
 void cbRead(CircularBuffer* cb, ElemType* elem) {
-    *elem = cb->elems[cb->start & (cb-size - 1)];
+    *elem = cb->elems[cb->start & (cb-s>ize - 1)];
     cb->start = cbIncr(cb, cb->start);
 }
 ```
