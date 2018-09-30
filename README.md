@@ -54,3 +54,6 @@ CoContextRuntime通过vector对协程进行保存，完成工作的协程通过�
 
 ## lru_cache
 lru C++实现
+
+## consist_hash
+一致性hash的c++实现
