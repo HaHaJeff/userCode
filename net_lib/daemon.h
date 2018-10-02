@@ -10,7 +10,6 @@ public:
     static int DaemonRestart(const char* pidifle);
     static int DaemonStop(const char* pidfile);
     static int GetPidFromFile(const char* pidfile);
-
     // cmd: start stop restart
     static void DaemonProcess(const char* cmd, const char* pidfile);
     static void ChangeTo(const char* argv[]);

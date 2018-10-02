@@ -35,11 +35,11 @@ public:
     static int Fcntl(int fd, int flag);
 };
 
-class ExitCaller : private Noncopyable {
+class ExitCaller {
 public:
-    ExitCaller(std::function<void()>&& functor) : functor_(std::move(functor)) {}
+    ExitCaller(std::function<void()>&& functor): functor_(std::move(functor)) {}
+    ~ExitCaller() { functor_();}
 private:
     std::function<void()> functor_;
 };
-
 #endif

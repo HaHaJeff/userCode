@@ -1,4 +1,5 @@
 #include "daemon.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <utility>
@@ -6,33 +7,29 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
-
-class ExitCaller {
-public:
-    ExitCaller(std::function<void()>&& functor): functor_(std::move(functor)) {}
-    ~ExitCaller() { functor_();}
-private:
-    std::function<void()> functor_;
-};
+#include <fcntl.h>
 
 // static function
 // only use in current file
 static int WritePidFile(const char *pidfile) {
     char str[32];
     int fd = open(pidfile, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-    
+
     // F_TLOCK lock file, ensure that current file just be wrote by one process
     if (fd < 0 || lockf(fd, F_TLOCK, 0) < 0) {
         fprintf(stderr, "Can't write pid file: %s", pidfile);
         return -1;
     }
     // Use RAII make sure that the file is closed by this process
-    ExitCaller call([] {close(fd);});
+    ExitCaller call([fd] {close(fd);});
 
     // write pid to the file
     sprintf(str, "%d\n", getpid());
     ssize_t len = strlen(str);
-    ssiize_t ret = write(fd, str, len);
+    ssize_t ret = write(fd, str, len);
+
+    fprintf(stdout, "pid: %s\n", str);
+
     if (ret != len) {
         fprintf(stderr, "write pidfile %s error!\n", pidfile);
         return -1;
@@ -45,7 +42,7 @@ int Daemon::GetPidFromFile(const char* pidfile) {
     int fd = open(pidfile, O_RDONLY, 0);
 
     if (fd  < 0) {
-        fprintf(stderr, "open pidfile %s error!\n", pidfile);
+    //    fprintf(stderr, "open pidfile %s error!\n", pidfile);
         return fd;
     }
 
@@ -68,7 +65,7 @@ int Daemon::GetPidFromFile(const char* pidfile) {
     }
 
     *p = '\0';
-    return Atoi(buffer);
+    return Util::Atoi(buffer);
 }
 
 int Daemon::DaemonStart(const char* pidfile) {
@@ -89,12 +86,17 @@ int Daemon::DaemonStart(const char* pidfile) {
         return -1;
     }
 
+    pid = fork();
     // parent exit
     if (pid > 0) {
-        exit(0); 
+        exit(0);
     }
 
     setsid();
+    pid = fork();
+    if (pid > 0) {
+        exit(0);
+    }
     int ret = WritePidFile(pidfile);
     if (ret != 0) {
         return ret;
@@ -109,9 +111,9 @@ int Daemon::DaemonStart(const char* pidfile) {
         close(fd);
         std::string file(pidfile);
         // ensure that the file will be deleted in the end of the process
-        static ExitCaller del([]{
+        static ExitCaller del([file]{
             unlink(file.c_str());
-        };);
+        });
 
         return 0;
     }
@@ -161,7 +163,7 @@ int Daemon::DaemonRestart(const char* pidfile) {
         } else if (errno == EPERM) {
             fprintf(stderr, "don't have permission to kill process: %d\n", pid);
             return -1;
-        } 
+        }
     }
     else {
         fprintf(stderr, "pid file noe valid, just ignore");
