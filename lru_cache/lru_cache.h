@@ -74,6 +74,11 @@ namespace cache {
 
     private:
       // 因为删除操作可能会很多，所以选择list而非vector
+      // 选用map记录key对应的list_node在list中的位置，从而快速查找删除
+      // 每次插入新的node，直接插入到链表头部，并在map中查找新的node是否
+      // 在map中出现过，如果出现则直接删除该node在list中的位置，从而保证
+      // 只有一个list中只有一个包含相同key的node
+      // map的好处是：如果插入的node在list中已经存在了话可以快速删除该node
       std::unordered_map<key_t, list_iterator_t> cache_items_map_;
       std::list<key_value_pair_t> cache_items_list_;
       size_t max_size_;
