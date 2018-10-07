@@ -17,7 +17,7 @@ public:
 
     Status(const Status& s) { state_ = s.Clone(); }
     void operator=(const Status& s) { delete[] state_; state_ = s.Clone(); }
-    Status(Status&& s) { state_ = s.state_; } 
+    Status(Status&& s) { state_ = s.state_; }
     void operator=(Status&& s) { delete[] state_; state_ = s.state_; s.state_ = nullptr; }
 
 private:
