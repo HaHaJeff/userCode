@@ -1,12 +1,9 @@
 #include "util.h"
 #include <chrono>
 #include <memory>
-
-extern "C" {
 #include <stdarg.h>
 #include <unistd.h>
 #include <fcntl.h>
-}
 
 std::string Util::Format(const char *fmt, ...)
 {
