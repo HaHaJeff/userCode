@@ -2,10 +2,12 @@
 #define STATUS_H
 
 #include <string>
-#include "util.h"
 extern "C" {
 #include <string.h>
+#include <stdarg.h>
 }
+
+#include "util.h"
 
 inline const char* errstr() {return strerror(errno);}
 
@@ -19,7 +21,7 @@ public:
 
     Status(const Status& s) { state_ = s.Clone(); }
     void operator=(const Status& s) { delete[] state_; state_ = s.Clone(); }
-    Status(Status&& s) { state_ = s.state_; }
+    Status(Status&& s) { state_ = s.state_; s.state_ = nullptr;}
     void operator=(Status&& s) { delete[] state_; state_ = s.state_; s.state_ = nullptr; }
 
     // errno is threa local
@@ -74,7 +76,7 @@ inline Status::Status(int code, const char* msg) {
 }
 
 // construct Status object from fmt
-inline Status Status::FromForamt(int code, const char* fmt, ...) {
+inline Status Status::FromFormat(int code, const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     // get size, 1 means '\0'
@@ -82,15 +84,15 @@ inline Status Status::FromForamt(int code, const char* fmt, ...) {
     va_end(ap);
 
     Status res;
-    r.state_ = new char[sz];
-    char* p = r.state_;
+    res.state_ = new char[sz];
+    char* p = const_cast<char*>(res.state_);
     // length: include header info
     *(uint32_t*)p = sz;
     // code
     *(uint32_t*)(p+4) = code;
     // msg
     va_start(ap, fmt);
-    vsnprintf((char*)p+8, size-8, fmt, ap);
+    vsnprintf(p+8, sz-8, fmt, ap);
     va_end(ap);
     return res;
 }
