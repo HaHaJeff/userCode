@@ -15,7 +15,12 @@ public:
         int currentSum = 0;
         std::sort(nums.begin(), nums.end());
         for (; first < size - 2; first++) {
-            second = first + 1; third = size - 1; while (second < third) { currentSum = nums[first] + nums[second] + nums[third]; if (currentSum == target) return currentSum; closestSum = std::abs(target - closestSum) < std::abs(target - currentSum) ? closestSum : currentSum;
+            second = first + 1; third = size - 1;
+            while (second < third) {
+                currentSum = nums[first] + nums[second] + nums[third];
+                if (currentSum == target)
+                    return currentSum;
+                closestSum = std::abs(target - closestSum) < std::abs(target - currentSum) ? closestSum : currentSum;
 
                 if (currentSum < target) second++;
                 else third--;
