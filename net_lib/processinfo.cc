@@ -46,8 +46,8 @@ int g_pageSize = static_cast<int>(sysconf(_SC_PAGE_SIZE));
 int g_openMax = static_cast<int>(sysconf(_SC_OPEN_MAX));
 
 pid_t ProcessInfo::pid() { return getpid(); }
-std::string ProcessInfo::pidString() { return Util::Format("%d", ProcessInfo::pid()); }
-uid_t uid() { return getuid(); }
+std::string ProcessInfo::pidString() { return Util::Format("%ld", ProcessInfo::pid()); }
+uid_t ProcessInfo::uid() { return getuid(); }
 std::string ProcessInfo::userName()
 {
     struct passwd pwd;
@@ -120,7 +120,7 @@ std::string ProcessInfo::procStatus()
 std::string ProcessInfo::threadStat()
 {
     char name[64];
-    snprintf(name, sizeof(name), "/proc/self/task/%d/stat", syscall(__NR_gettid));
+    snprintf(name, sizeof(name), "/proc/self/task/%ld/stat", syscall(__NR_gettid));
     std::string result;
     File::GetContent(name, result);
     return result;

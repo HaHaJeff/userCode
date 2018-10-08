@@ -40,7 +40,6 @@ namespace ProcessInfo {
     CpuTime cpuTime();
     int numThreads();
     std::vector<pid_t> threads();
-
-};
+}
 
 #endif
