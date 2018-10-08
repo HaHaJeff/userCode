@@ -6,10 +6,8 @@
 #include <utility>
 #include <vector>
 
-extern "C" {
-    #include <string.h>
-    #include <stdlib.h>
-}
+#include <string.h>
+#include <stdlib.h>
 
 // private inherite Noncopyable 
 // get the feature of Noncopyable
