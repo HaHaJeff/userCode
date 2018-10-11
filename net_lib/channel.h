@@ -36,6 +36,10 @@ public:
     short GetEvents() const { return events_; }
     int GetFd() const { return fd_; }
     int64_t GetId() const { return id_; }
+    short GetREvents() const { return revents_; }
+    //loop_ will call this function
+    void SetREvents(short revents) { revents_ = revents; }
+
     EventLoop* GetOwnerLoop() const { return loop_; }
 
     void HandleEvent();
@@ -45,8 +49,10 @@ public:
 private:
     EventLoop* loop_;
     short events_;
+    short revents_;
     const int fd_;
     int64_t id_;
+    bool addedToThisLoop_;
 
     EventCallback readCallback_;
     EventCallback writeCallback_;

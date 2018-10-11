@@ -52,7 +52,6 @@ private:
     long lastRotate_;
     std::atomic<int64_t> realRotate_;
     long rotateInterval_;
-    std::string basename_;
     std::string filename_;
 };
 
