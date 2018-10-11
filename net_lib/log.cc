@@ -123,7 +123,7 @@ void Logger::Write(int level, const char* file, int line, const char*func, const
     char* limit = buffer+sizeof(buffer);
 
     TimeStamp t(TimeStamp::Now());
-    std::string tm = t.ToFormattedString();
+    std::string tm = t.ToFormattedString() + " ";
     memcpy(p, tm.c_str(), tm.size());
     p += tm.size(); 
 
@@ -134,7 +134,7 @@ void Logger::Write(int level, const char* file, int line, const char*func, const
 
     p = std::min(p, limit-2);
     // trim the ending \n
-    while (*--p != '\n') {
+    while (*--p == '\n') {
     }
     *++p = '\n';
     *++p = '\0';

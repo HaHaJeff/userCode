@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "util.h"
+#include "log.h"
 
 class EventLoop;
 
@@ -29,6 +30,7 @@ public:
     void DisableRead() { events_ &= ~kReadEvent; Update(); }
     void EnableWrite() { events_ |= kWriteEvent; Update(); }
     void DisableWrite() { events_ &= ~kWriteEvent; Update(); }
+    void DisableAll() { events_ = kNoneEvent; Update(); }
     bool IsWriting() const { return events_ & kWriteEvent; }
     bool IsReading() const { return events_ & kReadEvent; }
     bool IsNoneEvent() const { return events_ == kNoneEvent; }
@@ -43,8 +45,15 @@ public:
     EventLoop* GetOwnerLoop() const { return loop_; }
 
     void HandleEvent();
-    void Update();
     void Remove();
+
+    // DEBUG
+    std::string REventsToString() const;
+    std::string EventsToString() const;
+
+private:
+    std::string EventsToString(int fd, short ev) const;
+    void Update();
 
 private:
     EventLoop* loop_;
