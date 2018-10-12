@@ -53,21 +53,20 @@ void Logger::SetLogLevel(const std::string& level) {
     SETLOGLEVEL(iLevel);
 }
 
-//　日志名为格式化时间
 void Logger::SetFileName(const std::string& filename) {
-    int fd = open(filename.c_str(), O_APPEND | O_CREAT | O_WRONLY | O_CLOEXEC, DEFFILEMODE);
-    if (fd < 0) {
-        fprintf(stderr, "open log file %s failed. msg: %s ignored\n", filename.c_str(), strerror(errno));
-        return;
-    }
-
-    filename_ = filename;
-    if (fd == -1) {
-        fd_ = fd;
-    } else {
-        int r = dup2(fd, fd_);
-        FATALIF(r<0, "dup2 failed");
-        close(fd);
+  int fd = open(filename.c_str(), O_APPEND|O_CREAT|O_WRONLY|O_CLOEXEC, DEFFILEMODE);
+  if (fd < 0) {
+      fprintf(stderr, "open log file %s failed. msg: %s ignored\n",
+              filename.c_str(), strerror(errno));
+      return;
+  }
+  filename_ = filename;
+  if (fd_ == -1) {
+      fd_ = fd;
+  } else {
+      int r = dup2(fd, fd_);
+      FATALIF(r<0, "dup2 failed");
+      close(fd);
     }
 }
 
@@ -86,19 +85,15 @@ void Logger::MaybeRotate() {
         return;
     }
 
-    //以第一次设置的filename为基准
-    static std::string basename = filename_;
     TimeStamp t(TimeStamp::Now());
-    std::string newname = basename + t.ToFormattedString();
+    std::string newname = GetLogFileName(); 
 
     int err = rename(filename_.c_str(), newname.c_str());
     if (err != 0) {
         fprintf(stderr, "rename logfile %s -> %s failed msg: %s\n", filename_.c_str(), newname.c_str(), strerror(errno));
         return;
     }
-    //更新日志文件名
-    filename_ = newname;
-    int fd = open(newname.c_str(), O_APPEND | O_CREAT | O_WRONLY | O_CLOEXEC, DEFFILEMODE);
+    int fd = open(filename_.c_str(), O_APPEND | O_CREAT | O_WRONLY | O_CLOEXEC, DEFFILEMODE);
     
     if (fd < 0) {
        fprintf(stderr, "open log file %s failed. msg: %s ignored\n", newname.c_str(), strerror(errno));
