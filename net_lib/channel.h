@@ -10,6 +10,7 @@
 
 class EventLoop;
 
+// chanenel不拥有fd
 class Channel : public Noncopyable {
 public:
     typedef std::function<void()> EventCallback;
