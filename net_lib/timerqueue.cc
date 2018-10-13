@@ -138,6 +138,8 @@ void TimerQueue::HandleRead()
 
     //因为HandleRead会将CancelInLoop调用，所以在Reset之前应该将cancelingTimers清空
     //Reset会将过期timer删除，如果该timer不在CancelInLoop中的话
+    //如果在CancelTimerInLoop与GetExpired中重复删除，不会出现问题，因为在set以及map中
+    //删除不存在的数据不会出现错误
     cancelingTimers_.clear();
 
     for (auto it : expired)
