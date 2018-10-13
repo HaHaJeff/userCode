@@ -68,7 +68,7 @@ TimerQueue::TimerQueue(EventLoop *loop)
       timers_()
 //      callingExpiredTimers_(false)
 {
-    channel_.SetReadCallback(std::bind(TimerQueue::HandleRead, this));
+    channel_.SetReadCallback(std::bind(&TimerQueue::HandleRead, this));
     //Add into poller
     channel_.EnableRead();
 }
@@ -89,7 +89,7 @@ TimerId TimerQueue::AddTimer(const TimerCallback &cb,
                              double interval)
 {
     Timer *timer = new Timer(cb, expiration, interval);
-    loop_->RunInLoop(std::bind(TimerQueue::AddTimerInLoop, this, timer));
+    loop_->RunInLoop(std::bind(&TimerQueue::AddTimerInLoop, this, timer));
     return TimerId(timer, timer->GetSequence());
 }
 
@@ -98,13 +98,13 @@ TimerId TimerQueue::AddTimer(TimerCallback &&cb,
                              double interval)
 {
     Timer *timer = new Timer(cb, expiration, interval);
-    loop_->RunInLoop(std::bind(TimerQueue::AddTimerInLoop, this, timer));
+    loop_->RunInLoop(std::bind(&TimerQueue::AddTimerInLoop, this, timer));
     return TimerId(timer, timer->GetSequence());
 }
 
 void TimerQueue::Cancel(TimerId timerid)
 {
-    loop_->RunInLoop(std::bind(TimerQueue::CancelTimerIdInLoop, this, timerid));
+    loop_->RunInLoop(std::bind(&TimerQueue::CancelTimerIdInLoop, this, timerid));
 }
 
 void TimerQueue::AddTimerInLoop(Timer *timer)

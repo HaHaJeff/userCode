@@ -24,7 +24,7 @@ class TimerQueue : public Noncopyable
 
     void Cancel(TimerId timerId);
 
-  private:
+  //private:
     typedef std::pair<TimeStamp, Timer *> Entry;
     typedef std::set<Entry> TimerList;
     typedef std::pair<Timer *, int64_t> ActiveTimer;

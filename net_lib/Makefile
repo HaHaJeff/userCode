@@ -3,9 +3,14 @@ CXXFLAGS+= -g -std=c++11 -O2
 
 SRCS=$(wildcard *.cc)
 OBJS=$(patsubst %.cc, %.o, $(filter-out $(TEST),$(SRCS)))
-TEST=TestUtil.cc TestDaemon.cc TestProcessInfo.cc TestStatus.cc TestTime.cc TestChannel.cc
+TEST=TestUtil.cc TestDaemon.cc TestProcessInfo.cc TestStatus.cc TestTime.cc TestChannel.cc TestTimeQueue.cc
 
-all: $(OBJS) TestUtil TestDaemon TestProcessInfo TestStatus TestTime TestChannel clean
+all: $(OBJS) TestUtil TestDaemon TestProcessInfo TestStatus TestTime TestChannel TestTimeQueue clean
+
+TestTimeQueue: TestTimeQueue.cc $(OBJS)
+	@echo "OBJS:" $(OBJS)
+	@echo $^ "===>" $@
+	$(CXX) $^ $(CXXFLAGS) -o $@
 
 TestUtil: TestUtil.cc $(OBJS)
 	@echo "OBJS:" $(OBJS)

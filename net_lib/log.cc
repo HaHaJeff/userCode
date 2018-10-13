@@ -86,7 +86,7 @@ void Logger::MaybeRotate() {
     }
 
     TimeStamp t(TimeStamp::Now());
-    std::string newname = GetLogFileName(); 
+    std::string newname = filename_ + t.ToFormattedString();
 
     int err = rename(filename_.c_str(), newname.c_str());
     if (err != 0) {
@@ -94,7 +94,7 @@ void Logger::MaybeRotate() {
         return;
     }
     int fd = open(filename_.c_str(), O_APPEND | O_CREAT | O_WRONLY | O_CLOEXEC, DEFFILEMODE);
-    
+
     if (fd < 0) {
        fprintf(stderr, "open log file %s failed. msg: %s ignored\n", newname.c_str(), strerror(errno));
        return;
@@ -120,7 +120,7 @@ void Logger::Write(int level, const char* file, int line, const char*func, const
     TimeStamp t(TimeStamp::Now());
     std::string tm = t.ToFormattedString() + " ";
     memcpy(p, tm.c_str(), tm.size());
-    p += tm.size(); 
+    p += tm.size();
 
     va_list args;
     va_start(args, fmt);
