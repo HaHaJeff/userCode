@@ -5,8 +5,8 @@
 #include <map>
 #include "timestamp.h"
 #include "util.h"
+#include "eventloop.h"
 
-class EventLoop;
 class Channel;
 
 // like libevent
@@ -25,12 +25,14 @@ public:
 
     virtual void UpdateChannel(Channel* channel) = 0;
     virtual void RemoveChannel(Channel* channel) = 0;
+    virtual void AddChannel(Channel* channel) = 0;
 
-    virtual bool HasChannel(Channel* channel) const;
+    bool HasChannel(Channel* channel) const;
 
     static Poller* NewDefaultPoller(EventLoop* loop);
 
     void AssertInLoopThread() const {
+        ownerLoop_->AssertInLoopThread();
     }
 
  protected:

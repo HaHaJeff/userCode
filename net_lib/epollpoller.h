@@ -15,12 +15,12 @@ public:
     TimeStamp Poll(int timeoutMs, ChannelList* activeChannels) override;
     void UpdateChannel(Channel* channel) override;
     void RemoveChannel(Channel* channel) override;
+    void AddChannel(Channel* channel) override;
 
 private:
     static const int kInitEventListSize = 16;
     void FillActiveChannels(int numEvents, ChannelList* activeChannels) const;
-    void Update(int operation, Channel* channel);
-
+    static std::string OperationToString(int op);
     typedef std::vector<struct epoll_event> EventList;
 
 private:

@@ -10,7 +10,6 @@
 // POLLERR: error condition
 // POLLRDHUP:  stream socket peer connection close, or shutdown writing of half connection
 // POLLHUP: fd is valid, however, a device disconnect
-const int Channel::kNoneEvent = 0;
 const int Channel::kWriteEvent = POLLOUT;
 const int Channel::kReadEvent = POLLIN | POLLPRI;
 
@@ -24,6 +23,7 @@ Channel::Channel(EventLoop* loop, int fd)
 {
     static std::atomic<int64_t> id(0);
     id_ = ++id;
+    loop_->AddChannel(this);
 }
 
 
@@ -55,15 +55,20 @@ void Channel::HandleEvent() {
 }
 
 void Channel::Update() {
-    addedToThisLoop_ = true;
+    assert(addedToThisLoop_);
     loop_->UpdateChannel(this);
 }
 
 // before call this function, should call Disable
-void Channel::Remove() {
-    assert(IsNoneEvent());
+void Channel::RemoveFromLoop() {
+    assert(addedToThisLoop_);
     addedToThisLoop_ = false;
-    loop_->UpdateChannel(this);
+    loop_->RemoveChannel(this);
+}
+
+void Channel::AddToLoop() {
+    addedToThisLoop_ = true;
+    loop_->AddChannel(this);
 }
 
 std::string Channel::REventsToString() const {

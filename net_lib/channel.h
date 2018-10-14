@@ -46,7 +46,8 @@ public:
     EventLoop* GetOwnerLoop() const { return loop_; }
 
     void HandleEvent();
-    void Remove();
+    void RemoveFromLoop();
+    void AddToLoop();
 
     // DEBUG
     std::string REventsToString() const;
