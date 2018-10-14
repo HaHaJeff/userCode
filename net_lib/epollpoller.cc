@@ -68,31 +68,17 @@ void EpollPoller::UpdateChannel(Channel *channel)
 {
     Poller::AssertInLoopThread();
 
-    int fd = channel->GetFd();
-    struct epoll_event event;
-    memset(&event, 0, sizeof(struct epoll_event));
-    event.events = channel->GetEvents();
-    event.data.ptr = channel;
-
-    TRACE("adding channel %lld fd %d events %d epoll %d", (long long)channel->GetId(), fd, event.events, epollfd_);
-    int ret = epoll_ctl(epollfd_, EPOLL_CTL_MOD, fd, &event);
-    FATALIF(ret == 0, "epoll_ctl mod failed %d %s", errno, strerror(errno));
+    TRACE("updating channel %lld fd %d events %d epoll %d", (long long)channel->GetId(), channel->GetFd(), channel->GetEvents(), epollfd_);
+    Update(EPOLL_CTL_MOD, channel);
 }
 
 void EpollPoller::AddChannel(Channel *channel)
 {
     Poller::AssertInLoopThread();
 
-    int fd = channel->GetFd();
-    struct epoll_event event;
-    memset(&event, 0, sizeof(struct epoll_event));
-    event.events = channel->GetEvents();
-    event.data.ptr = channel;
-
-    TRACE("adding channel %lld fd %d events %d epoll %d", (long long)channel->GetId(), fd, event.events, epollfd_);
-    int ret = epoll_ctl(epollfd_, EPOLL_CTL_ADD, fd, &event);
-    FATALIF(ret == 0, "epoll_ctl add failed %d %s", errno, strerror(errno));
-    channels_[fd] = channel;
+    TRACE("adding channel %lld fd %d events %d epoll %d", (long long)channel->GetId(), channel->GetFd(), channel->GetEvents(), epollfd_);
+    Update(EPOLL_CTL_ADD, channel);
+    channels_[channel->GetFd()] = channel;
 }
 
 void EpollPoller::RemoveChannel(Channel *channel)
@@ -102,16 +88,21 @@ void EpollPoller::RemoveChannel(Channel *channel)
     assert(channels_.find(channel->GetFd()) != channels_.end());
     assert(channels_[channel->GetFd()] == channel);
 
+    TRACE("deleting channel %lld fd %d epoll %d", (long long)channel->GetId(), channel->GetFd(), epollfd_);
+    Update(EPOLL_CTL_DEL, channel);
+    channels_.erase(channel->GetFd());
+}
+
+void EpollPoller::Update(int operation, Channel* channel) {
     int fd = channel->GetFd();
     struct epoll_event event;
     memset(&event, 0, sizeof(struct epoll_event));
     event.events = channel->GetEvents();
     event.data.ptr = channel;
 
-    TRACE("deleting channel %lld fd %d epoll %d", (long long)channel->GetId(), fd, epollfd_);
     int ret = epoll_ctl(epollfd_, EPOLL_CTL_DEL, fd, &event);
-    FATALIF(ret == 0, "epoll_ctl del failed %d %s", errno, strerror(errno));
-    channels_.erase(fd);
+    FATALIF(ret == 0, "epoll_ctl %s failed %d %s", EpollPoller::OperationToString(operation).c_str(), errno, strerror(errno));
+    int ret = epoll_ctl(epollfd_, EPOLL_CTL_DEL, fd, &event);
 }
 
 std::string EpollPoller::OperationToString(int op) {

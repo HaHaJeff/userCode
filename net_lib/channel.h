@@ -28,13 +28,9 @@ public:
     void SetErrorCallback(EventCallback&& cb) { errorCallback_ = std::move(cb);}
     
     void EnableRead() { events_ |= kReadEvent; Update(); }
-    void DisableRead() { events_ &= ~kReadEvent; Update(); }
     void EnableWrite() { events_ |= kWriteEvent; Update(); }
-    void DisableWrite() { events_ &= ~kWriteEvent; Update(); }
-    void DisableAll() { events_ = kNoneEvent; Update(); }
     bool IsWriting() const { return events_ & kWriteEvent; }
     bool IsReading() const { return events_ & kReadEvent; }
-    bool IsNoneEvent() const { return events_ == kNoneEvent; }
 
     short GetEvents() const { return events_; }
     int GetFd() const { return fd_; }
@@ -70,7 +66,6 @@ private:
     EventCallback closeCallback_;
     EventCallback errorCallback_;
 
-    static const int kNoneEvent;
     static const int kReadEvent;
     static const int kWriteEvent;
 };
