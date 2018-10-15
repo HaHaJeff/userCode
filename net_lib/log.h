@@ -27,7 +27,7 @@
 
 class Logger : private Noncopyable {
 public:
-    enum LogLevel{LFATAL=0, LERROR, LWARN, LINFO, LDEGBU, LTRACE, LALL};
+    enum LogLevel{LFATAL=0, LERROR, LWARN, LINFO, LDEBUG, LTRACE, LALL};
     Logger();
     ~Logger();
     void Write(int level, const char* file, int line, const char* func, const char* fmt,...);
