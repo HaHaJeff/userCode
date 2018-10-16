@@ -68,15 +68,18 @@ TimerQueue::TimerQueue(EventLoop *loop)
       timers_()
 //      callingExpiredTimers_(false)
 {
+    TRACE("TimerQueue create, timerfd: %d", timerfd_);
     channel_.SetReadCallback(std::bind(&TimerQueue::HandleRead, this));
     //Add into poller
+    //FIXME: 两次调用epoll_ctl系统调用，能否减少为一次
+    //参见muduo的方式
+    channel_.AddToLoop();
     channel_.EnableRead();
 }
 
 TimerQueue::~TimerQueue()
 {
-    channel_.DisableAll();
-    channel_.Remove();
+    channel_.RemoveFromLoop();
     close(timerfd_);
     for (auto it : timers_)
     {
@@ -135,6 +138,7 @@ void TimerQueue::HandleRead()
 
     //获得expired的Entry，并将其从timers_中erase
     std::vector<Entry> expired = GetExpired(now);
+    TRACE("TimerQueue::HandleRead total count %d, now: %s", expired.size(), now.ToFormattedString().c_str());
 
     //因为HandleRead会将CancelInLoop调用，所以在Reset之前应该将cancelingTimers清空
     //Reset会将过期timer删除，如果该timer不在CancelInLoop中的话

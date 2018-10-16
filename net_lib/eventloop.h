@@ -28,7 +28,7 @@ public:
     bool HasChannel(Channel* ch);
 
     void RunInLoop(const Functor& func);
-    void RunInrLoop(Functor&& func);
+    void RunInLoop(Functor&& func);
     bool AssertInLoopThread();
 
     TimerId RunAt(TimeStamp&& time, TimerCallback&& cb);

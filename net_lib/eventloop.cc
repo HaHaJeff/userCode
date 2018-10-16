@@ -39,7 +39,7 @@ EventLoop::~EventLoop() {
 void EventLoop::Loop() {
     TRACE("Event loop %p start looping", this);
 
-    while(quit_) {
+    while(!quit_) {
         activeChannels_.clear();
         poller_->Poll(kPollTimeMs, &activeChannels_);
 
@@ -83,4 +83,24 @@ TimerId EventLoop::RunAfter(double interval, TimerCallback&& cb) {
 TimerId EventLoop::RunAfter(double interval, const TimerCallback& cb) {
     TimeStamp time(AddTime(TimeStamp(TimeStamp::Now()), interval));
     return timerQueue_->AddTimer(cb, time, 0.0);
+}
+
+bool EventLoop::AssertInLoopThread() {
+    return true;
+}
+
+void EventLoop::RunInLoop(const Functor& func) {
+    func();
+}
+
+void EventLoop::RunInLoop(Functor&& func) {
+    func();
+}
+
+void EventLoop::HandleRead() {
+    uint64_t one = 1;
+    ssize_t n = read(wakeupFd_, &one, sizeof(one));
+    if (n != sizeof(one)) {
+        ERROR("EventLoop::HandleRead() reads %d bytes instead of 8", n);
+    }
 }

@@ -100,9 +100,8 @@ void EpollPoller::Update(int operation, Channel* channel) {
     event.events = channel->GetEvents();
     event.data.ptr = channel;
 
-    int ret = epoll_ctl(epollfd_, EPOLL_CTL_DEL, fd, &event);
-    FATALIF(ret == 0, "epoll_ctl %s failed %d %s", EpollPoller::OperationToString(operation).c_str(), errno, strerror(errno));
-    int ret = epoll_ctl(epollfd_, EPOLL_CTL_DEL, fd, &event);
+    int ret = epoll_ctl(epollfd_, operation, fd, &event);
+    FATALIF(ret < 0, "epoll_ctl %s failed %d %s", EpollPoller::OperationToString(operation).c_str(), errno, strerror(errno));
 }
 
 std::string EpollPoller::OperationToString(int op) {

@@ -23,7 +23,6 @@ Channel::Channel(EventLoop* loop, int fd)
 {
     static std::atomic<int64_t> id(0);
     id_ = ++id;
-    loop_->AddChannel(this);
 }
 
 

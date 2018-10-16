@@ -15,7 +15,7 @@
 #include "log.h"
 #include "timestamp.h"
 
-Logger::Logger() : level_(LINFO), lastRotate_(time(NULL)), rotateInterval_(86400) {
+Logger::Logger() : level_(LALL), lastRotate_(time(NULL)), rotateInterval_(86400) {
     tzset();
     fd_ = -1;
     realRotate_ = lastRotate_;
