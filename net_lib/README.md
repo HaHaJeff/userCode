@@ -8,8 +8,22 @@ channel作为poller调度的基本单位，是网络编程中必不可少的一�
 **在handy中，channel析构自动关闭其负责的fd；在muduo中，channel不负责fd的关闭，而是由更高层的TcpConnect等负责,TcpConect通过设置回调从而在EventLoop(EventPoller)中自动调用该函数，从而将fd关闭,需要自己调用TcpConnect提供的关闭函数**
 
 ### Poller
-Poller是IO multiplexing的封装，负责管理channel的活动,需要一个容器管理channel **libevent将poller作为基类，后端分别对应不同平台实现同的多路复用结构**
+Poller是IO multiplexing的封装，负责管理channel的活动,需要一个容器管理channel **libevent将poller作为基类，后端分别对应不同平台实现不同的多路复用结构**
 
+### EpollPoller 继承自Poller
+
+**TODO:调用addchannel与updatechannel应该可以合为一次调用，参考muduo**
+
+- AddChannel: 向epollfd添加一个struct epoll_event结构体，epoll_event.data.ptr = channel
+- RemoveChannel: 从Poller中移除特定的channel，使用epoll_ctl(del)，**但是handy中处理删除只是将对应epoll_event.data.ptr置nullptr**
+- UpdateChannel: 更新对应channel的event
+- Poll: Poller不做具体事件的执行，而是仅仅将活动的channel返回
+
+### Timer
+封装了timer的序号以及到期时间和一个回调函数
+
+### TimerQueue
+使用timerfd_create创建一个用于定时的文件描述符，并将此文件描述符封装为channel加入到EventLoop中, AddTimer接口作为TimerQueue的开放接口，每次添加Timer的时候，将timer加入到std::set中，以到期时间作为key值。**但是仅以到期时间作为key，会出现到期时间重复的问题，于是采用key=到期时间+Timer指针**
 
 ### 事件处理机制 参照libevent
 ```
