@@ -1,4 +1,3 @@
-
 # 参照muduo和handy
 ### channel
 channel作为poller调度的基本单位，是网络编程中必不可少的一环。负责注册与相应IO事件。handy和muduo在该方面都有自己的实现，两者的实现方式类似，都是将EventBase(handy+PollerBase，EventLoop-muduo)作为channel成员变量，在channel构造的时候直接将this添加到EventBase(EventLoop中)

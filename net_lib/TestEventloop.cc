@@ -10,6 +10,15 @@ int main()
     log.SetFileName("event.log");
     EventLoop loop;
 
-    loop.RunAfter(1.0, [=]{std::cout << "RunAfter" << std::endl;});
+    int i = 0;
+    while (i < 100) {
+        loop.RunAfter(1.0, [i]
+            {
+            std::cout << "RunAfter: "  << i << std::endl;
+            }
+            );
+        i+=1;
+    } 
+
     loop.Loop();    
 }
