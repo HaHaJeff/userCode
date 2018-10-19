@@ -20,5 +20,5 @@ int main()
         i+=1;
     } 
 
-    loop.Loop();    
+    loop.Loop();
 }
