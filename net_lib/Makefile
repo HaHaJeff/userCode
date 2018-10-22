@@ -14,6 +14,13 @@ all: daemon
 daemon :$(TEST_OBJ) $(NET_OBJ)
 	$(CXX) $^ -o $@
 
-.cc.o:
+# 隐含规则包括了下面这个，但是写出来是最好的
+# 定义模式规则
+# .cc.o:
+%.o:%.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	rm daemon $(TEST_OBJ) $(NET_OBJ)
 
