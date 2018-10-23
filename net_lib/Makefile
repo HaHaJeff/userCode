@@ -23,4 +23,3 @@ daemon :$(TEST_OBJ) $(NET_OBJ)
 .PHONY: clean
 clean:
 	rm daemon $(TEST_OBJ) $(NET_OBJ)
-

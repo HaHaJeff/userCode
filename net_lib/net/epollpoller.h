@@ -7,7 +7,7 @@
 struct epoll_event;
 
 class EpollPoller: public Poller {
-public:
+  public:
     EpollPoller(EventLoop* loop);
     ~EpollPoller();
 
@@ -17,14 +17,14 @@ public:
     void RemoveChannel(Channel* channel) override;
     void AddChannel(Channel* channel) override;
 
-private:
+  private:
     static const int kInitEventListSize = 16;
     void FillActiveChannels(int numEvents, ChannelList* activeChannels) const;
     static std::string OperationToString(int op);
     typedef std::vector<struct epoll_event> EventList;
     void Update(int operation, Channel* channel);
 
-private:
+  private:
     int epollfd_;
     EventList events_;
 
