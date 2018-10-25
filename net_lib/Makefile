@@ -1,7 +1,7 @@
 OPT ?= -g2
 
 CFLAGS += -I./net $(OPT)
-CXXFLAGS += -I./net $(OPT)
+CXXFLAGS += -I./net $(OPT) -std=c++11
 
 NET_SOURCES = $(shell find net -name '*.cc')
 NET_OBJ = $(NET_SOURCES:.cc=.o)
@@ -9,7 +9,7 @@ NET_OBJ = $(NET_SOURCES:.cc=.o)
 TEST_SOURCES = $(shell find net_test -name '*.cc')
 TEST_OBJ = $(TEST_SOURCES:.cc=.o)
 
-all: daemon
+all: daemon clean
 
 daemon :$(TEST_OBJ) $(NET_OBJ)
 	$(CXX) $^ -o $@
@@ -22,4 +22,4 @@ daemon :$(TEST_OBJ) $(NET_OBJ)
 
 .PHONY: clean
 clean:
-	rm daemon $(TEST_OBJ) $(NET_OBJ)
+	rm $(TEST_OBJ) $(NET_OBJ)

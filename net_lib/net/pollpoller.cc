@@ -38,4 +38,14 @@ void PollPoller::FillActiveChannels(int numEvents, ChannelList* activeChannels) 
   }
 }
 
+void PollPoller::UpdateChannel(Channel* channel) {
 
+}
+
+void PollPoller::AddChannel(Channel* channel) {
+
+}
+
+void PollPoller::RemoveChannel(Channel* channel) {
+
+}
