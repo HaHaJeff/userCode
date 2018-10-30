@@ -65,8 +65,9 @@ void PollPoller::AddChannel(Channel* channel) {
   pfd.events = channel->GetEvents();
   pfd.revents = 0;
   pollfds_.push_back(pfd);
-
+  int idx = pollfds_.size()-1;
   channels_[pfd.fd] = channel;
+  index_[channel] = idx;
 }
 
 void PollPoller::RemoveChannel(Channel* channel) {
@@ -74,5 +75,18 @@ void PollPoller::RemoveChannel(Channel* channel) {
   TRACE("remove channel %lld fd %d events %d", (long long)channel->GetId(), channel->GetFd(), channel->GetEvents());
   assert(channels_.find(channel->GetFd()) != channels_.end());
   assert(channels_[channel->GetFd()] == channel);
-  const struct pollfd& pfd = *pollfds_.find(channel);
+  assert(index_.find(channel) != index_.end());
+  int idx = index_[channel];
+  const struct pollfd& pfd = pollfds_[idx];
+
+  if (idx == pollfds_.size()-1) {
+      pollfds_.pop_back();
+  } else {
+    // FIXME: 通过将idx对应的channel放置末尾，减少erase开销
+    swap(pollfds_.begin()+idx, pollfds_.end());
+    Channel* end;
+    index_[end] = idx;
+    pollfds_.pop_back();
+  }
+  index_.erase(channel);
 }

@@ -2,6 +2,7 @@
 #define POLLPOLLER_H
 
 #include <vector>
+#include <map>
 #include "poller.h"
 
 class PollPoller: public Poller {
@@ -17,9 +18,11 @@ class PollPoller: public Poller {
    private:
      void FillActiveChannels(int numEvents, ChannelList* activeChannels) const;
      typedef std::vector<struct pollfd> PollFdList;
+     typedef std::map<Channel*, int> PollFdIndexMap;
 
    private:
      PollFdList pollfds_;
+     PollFdIndexMap index_;
 };
 
 #endif
