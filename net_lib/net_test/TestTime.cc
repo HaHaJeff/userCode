@@ -1,5 +1,6 @@
 #include <iostream>
 #include <poll.h>
+#include "net.h"
 #include "buffer.h"
 #include "eventloop.h"
 #include "log.h"
@@ -29,6 +30,11 @@ TEST(TestBase, Buffer) {
   buf.Consume(7);
 
   std::cout << buf.GetData() << std::endl;
+}
+
+TEST(TestBase, Ip4Addr) {
+  Ip4Addr ip4("127.0.0.1", 9999);
+  std::cout << ip4.ToString() << std::endl;
 }
 
 TEST(TestBase, EventLoop) {
