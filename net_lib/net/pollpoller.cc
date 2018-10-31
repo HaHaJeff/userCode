@@ -1,6 +1,7 @@
 #include <poll.h>
 #include <errno.h>
 #include <assert.h>
+#include <algorithm>
 #include "pollpoller.h"
 #include "log.h"
 #include "channel.h"
@@ -65,9 +66,9 @@ void PollPoller::AddChannel(Channel* channel) {
   pfd.events = channel->GetEvents();
   pfd.revents = 0;
   pollfds_.push_back(pfd);
-  int idx = pollfds_.size()-1;
   channels_[pfd.fd] = channel;
-  index_[channel] = idx;
+  size_t idx = pollfds_.size()-1;
+  channel->SetIndex(idx);
 }
 
 void PollPoller::RemoveChannel(Channel* channel) {
@@ -75,18 +76,18 @@ void PollPoller::RemoveChannel(Channel* channel) {
   TRACE("remove channel %lld fd %d events %d", (long long)channel->GetId(), channel->GetFd(), channel->GetEvents());
   assert(channels_.find(channel->GetFd()) != channels_.end());
   assert(channels_[channel->GetFd()] == channel);
-  assert(index_.find(channel) != index_.end());
-  int idx = index_[channel];
-  const struct pollfd& pfd = pollfds_[idx];
+  size_t idx = channel->GetIndex();
 
-  if (idx == pollfds_.size()-1) {
-      pollfds_.pop_back();
-  } else {
-    // FIXME: 通过将idx对应的channel放置末尾，减少erase开销
-    swap(pollfds_.begin()+idx, pollfds_.end());
-    Channel* end;
-    index_[end] = idx;
+  // 不调用vector的erase，vector在内部调用删除操作开销太大，于是选择将要删除的放至末尾
+  // 调用pop_back
+  if (idx == pollfds_.size() - 1) {
     pollfds_.pop_back();
+  } else {
+    const struct pollfd& endPfd = pollfds_.back();
+    std::iter_swap(pollfds_.begin()+idx, pollfds_.end()-1);
+    channels_[endPfd.fd]->SetIndex(idx);
+    pollfds_.pop_back();
+    channels_.erase(channel->GetFd());
   }
-  index_.erase(channel);
+
 }

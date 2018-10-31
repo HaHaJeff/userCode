@@ -18,11 +18,9 @@ class PollPoller: public Poller {
    private:
      void FillActiveChannels(int numEvents, ChannelList* activeChannels) const;
      typedef std::vector<struct pollfd> PollFdList;
-     typedef std::map<Channel*, int> PollFdIndexMap;
 
    private:
      PollFdList pollfds_;
-     PollFdIndexMap index_;
 };
 
 #endif
