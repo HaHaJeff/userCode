@@ -56,6 +56,8 @@ void PollPoller::UpdateChannel(Channel* channel) {
   pfd.events = static_cast<short>(channel->GetEvents());
   pfd.revents = 0;
   // FIXME: ignore channel->IsNoneEvent()
+  int index = channel->GetIndex();
+  pollfds_[index] = pfd;
 }
 
 void PollPoller::AddChannel(Channel* channel) {
