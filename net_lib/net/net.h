@@ -15,8 +15,8 @@ class Net {
     static struct in_addr GetHostByName(const std::string& host);
     static void Bind(int sockfd, const struct sockaddr* addr);
     static void Listen(int sockfd);
-    static int Accept(int sockfd, struct sockaddr addr);
-    static int Connect(int sockfd, const struct sockadd* addr);
+    static int Accept(int sockfd, struct sockaddr* addr);
+    static int Connect(int sockfd, const struct sockaddr* addr);
     static ssize_t Read(int sockfd, void *buf, size_t count);
     static ssize_t Write(int sockfd, const void* buf, size_t count);
     static void Close(int sockfd);

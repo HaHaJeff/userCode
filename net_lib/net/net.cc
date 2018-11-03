@@ -53,6 +53,21 @@ struct in_addr Net::GetHostByName(const std::string& host) {
     return addr;
 }
 
+void Net::Bind(int sockfd, const struct sockaddr* addr) {
+}
+
+void Net::Listen(int sockfd) {
+}
+
+int Net::Accept(int sockfd, struct sockaddr* addr) {
+}
+
+int Net::Connect(int sockfd, const struct sockaddr* addr) {
+}
+
+ssize_t Net::Read(int sockfd, void* buf, size_t count) {
+}
+
 Ip4Addr::Ip4Addr(const std::string& host, short port) {
     memset(&addr_, 0, sizeof addr_);
     addr_.sin_family = AF_INET;
