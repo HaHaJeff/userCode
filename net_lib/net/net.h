@@ -1,6 +1,5 @@
 #ifndef NET_H
 #define NET_H
-
 #include <netdb.h>
 #include <string>
 #include <string.h>
@@ -14,8 +13,15 @@ class Net {
     static int SetReusePort(int fd, bool value=true);
     static int SetNoDelay(int fd, bool value=true);
     static struct in_addr GetHostByName(const std::string& host);
+    static void Bind(int sockfd, const struct sockaddr* addr);
+    static void Listen(int sockfd);
+    static int Accept(int sockfd, struct sockaddr addr);
+    static int Connect(int sockfd, const struct sockadd* addr);
+    static ssize_t Read(int sockfd, void *buf, size_t count);
+    static ssize_t Write(int sockfd, const void* buf, size_t count);
+    static void Close(int sockfd);
+    static void ShutdownWrite(int sockfd);
 };
-
 
 class Ip4Addr {
 public:

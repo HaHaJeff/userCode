@@ -26,9 +26,7 @@ TEST(TestBase, Buffer) {
   Buffer buf;
   char b[1024] = "hellow, world";
   buf.Append(b, 1024);
-
   buf.Consume(7);
-
   std::cout << buf.GetData() << std::endl;
 }
 
