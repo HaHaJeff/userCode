@@ -8,6 +8,7 @@
 #include "timer.h"
 #include "timestamp.h"
 #include "channel.h"
+#include "Processinfo.h"
 #include "net_test.h"
 
 
@@ -36,6 +37,10 @@ TEST(TestBase, Ip4Addr) {
   std::cout << ip4.ToString() << std::endl;
 }
 
+TEST(TestBase, ProcessInfo) {
+  std::cout << hostName() << std::endl;
+}
+
 TEST(TestBase, Socket) {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   Socket s(fd);
@@ -51,6 +56,14 @@ TEST(TestBase, Socket) {
   std::cout << "Socket tcp info: ";
   s.GetTcpInfoString(buf, 1024);
   std::cout << buf << std::endl;
+}
+
+TEST(TestBase, TimerQueue) {
+    EventLoop* loop = new EventLoop();
+    TimerQueue queue(loop);
+    Timer *timer = new Timer([=]{std::cout << "Timer" << std::endl;}, TimeStamp(TimeStamp::Now()), 0.0);
+    queue.AddTimerInLoop(timer);
+    queue.HandleRead();
 }
 
 TEST(TestBase, EventLoop) {
