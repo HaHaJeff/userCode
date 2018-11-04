@@ -53,3 +53,23 @@ int Socket::Accept(Ip4Addr& peerAddr) {
     }
     return connfd;
 }
+
+void Socket::ShutdownWrite() {
+    Net::ShutdownWrite(sockfd_);
+}
+
+void Socket::SetTcpNodelay(bool on) {
+    Net::SetNoDelay(sockfd_, on);
+}
+
+void Socket::SetReuseAddr(bool on) {
+    Net::SetReuseAddr(sockfd_, on);
+}
+
+void Socket::SetReusePort(bool on) {
+    Net::SetReusePort(on);
+}
+
+void Socket::SetKeepAlive(bool on) {
+    Net::SetKeepAlive(sockfd_, on);
+}

@@ -20,6 +20,7 @@ class Net {
     static int SetReuseAddr(int fd, bool value=true);
     static int SetReusePort(int fd, bool value=true);
     static int SetNoDelay(int fd, bool value=true);
+    static int SetKeepAlive(int fd, bool value=true);
     static struct in_addr GetHostByName(const std::string& host);
     static void Bind(int sockfd, const struct sockaddr* addr);
     static void Listen(int sockfd);
@@ -43,8 +44,8 @@ public:
     unsigned int GetNetEndianIp() const;
     short GetNetEndianPort() const;
     bool IsIpValid() const;
-    struct sockaddr_in GetAddr() { return addr_;}
-    struct sockaddr_in GetAddr() const { return addr_; }
+    struct sockaddr_in& GetAddr() { return addr_;}
+    const struct sockaddr_in& GetAddr() const { return addr_; }
     void SetSockaddr(const struct sockaddr_in& addr) { addr_ = addr; }
 
 private:

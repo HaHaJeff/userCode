@@ -1,5 +1,6 @@
 #include <iostream>
 #include <poll.h>
+#include "socket.h"
 #include "net.h"
 #include "buffer.h"
 #include "eventloop.h"
@@ -33,6 +34,23 @@ TEST(TestBase, Buffer) {
 TEST(TestBase, Ip4Addr) {
   Ip4Addr ip4("127.0.0.1", 9999);
   std::cout << ip4.ToString() << std::endl;
+}
+
+TEST(TestBase, Socket) {
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  Socket s(fd);
+  Ip4Addr ip4("127.0.0.1", 9999);
+  s.BindAddress(ip4);
+  s.Listen();
+  s.SetKeepAlive(true);
+  s.SetReuseAddr(true);
+  s.SetReusePort(true);
+  Ip4Addr peer;
+  int connfd = s.Accept(peer);
+  char buf[1024];
+  std::cout << "Socket tcp info: ";
+  s.GetTcpInfoString(buf, 1024);
+  std::cout << buf << std::endl;
 }
 
 TEST(TestBase, EventLoop) {

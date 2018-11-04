@@ -45,6 +45,12 @@ int Net::SetNoDelay(int fd, bool value) {
     return setsockopt(fd, SOL_SOCKET, TCP_NODELAY, &flag, len);
 }
 
+int Net::SetKeepAlive(int fd, bool value) {
+    int flag = value;
+    int len = sizeof(flag);
+    return setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &flag, len);
+}
+
 struct in_addr Net::GetHostByName(const std::string& host) {
     struct in_addr addr;
     char buf[1024];
@@ -121,6 +127,14 @@ Ip4Addr::Ip4Addr(const std::string& host, short port) {
     if (addr_.sin_addr.s_addr == INADDR_NONE) {
         ERROR("cannot resove %s to ip", host.c_str());
     }
+}
+
+void Net::Close(int sockfd) {
+    close(sockfd);
+}
+
+void Net::ShutdownWrite(int sockfd) {
+    shutdown(sockfd, SHUT_WR);
 }
 
 // 网络字节序，大端模式

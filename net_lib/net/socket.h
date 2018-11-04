@@ -13,7 +13,7 @@ public:
     void BindAddress(const Ip4Addr& localAddr);
     void Listen();
 
-    int Accept(Ip4Addr* peeraddr);
+    int Accept(Ip4Addr& peeraddr);
     void ShutdownWrite();
     void SetTcpNodelay(bool on);
     void SetReuseAddr(bool on);
