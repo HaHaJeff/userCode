@@ -54,18 +54,49 @@ struct in_addr Net::GetHostByName(const std::string& host) {
 }
 
 void Net::Bind(int sockfd, const struct sockaddr* addr) {
+    int ret = bind(sockfd, addr, static_cast<socklen_t>(sizeof(struct sockaddr)));
+    if (ret < 0) {
+        FATAL("Net::Bind");
+    }
 }
 
 void Net::Listen(int sockfd) {
+    int ret = listen(sockfd, SOMAXCONN);
+    if (ret < 0) {
+        FATAL("Net::Listen");
+    }
 }
 
 int Net::Accept(int sockfd, struct sockaddr* addr) {
+    socklen_t addrlen = static_cast<socklen_t>(sizeof *addr);
+    int connfd = accept(sockfd, addr, &addrlen);
+    if (connfd < 0) {
+        int savedErrno = errno;
+        ERROR("Net::Accept");
+        switch(savedErrno) {
+            case EAGAIN: // nonblock and no connection
+            case ECONNABORTED: // a connection has been aborted
+            case EINTR: // the system call was interrupted by a signal that was caught before a valid connection arrived
+            case EPROTO: //protocol error
+            case EPERM: // firewall rules forbid connection
+            default:
+              FATAL("accept unexpected error");
+              break;
+        }
+    }
+    return connfd;
 }
 
 int Net::Connect(int sockfd, const struct sockaddr* addr) {
+    return connect(sockfd, addr, static_cast<socklen_t>(sizeof(struct sockaddr)));
 }
 
 ssize_t Net::Read(int sockfd, void* buf, size_t count) {
+    return read(sockfd, buf, count);
+}
+
+ssize_t Net::Write(int sockfd, const void* buf, size_t count) {
+    return write(sockfd, buf, count);
 }
 
 Ip4Addr::Ip4Addr(const std::string& host, short port) {
