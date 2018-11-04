@@ -8,9 +8,9 @@
 #include "timer.h"
 #include "timestamp.h"
 #include "channel.h"
-#include "Processinfo.h"
+#include "processinfo.h"
 #include "net_test.h"
-
+#include "timerqueue.h"
 
 TEST(TestBase, TimeStamp) {
   TimeStamp t(TimeStamp::Now());
@@ -38,7 +38,7 @@ TEST(TestBase, Ip4Addr) {
 }
 
 TEST(TestBase, ProcessInfo) {
-  std::cout << hostName() << std::endl;
+  std::cout << ProcessInfo::hostName() << std::endl;
 }
 
 TEST(TestBase, Socket) {
