@@ -6,6 +6,14 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
+template<typename To, typename From>
+inline To implicit_cast(From const&f) {
+    return f;
+}
+
+const struct sockaddr* sockaddr_cast(const struct sockaddr_in* addr);
+struct sockaddr* sockaddr_cast(struct sockaddr_in* addr);
+
 class Net {
   public:
     static int SetNonBlock(int fd, bool value=true);
@@ -35,7 +43,9 @@ public:
     unsigned int GetNetEndianIp() const;
     short GetNetEndianPort() const;
     bool IsIpValid() const;
-    struct sockaddr_in& GetAddr() { return addr_;}
+    struct sockaddr_in GetAddr() { return addr_;}
+    struct sockaddr_in GetAddr() const { return addr_; }
+    void SetSockaddr(const struct sockaddr_in& addr) { addr_ = addr; }
 
 private:
     struct sockaddr_in addr_;

@@ -2,9 +2,18 @@
 #include <unistd.h>
 #include <netinet/tcp.h>
 #include <sys/socket.h>
+#include <utility>
 #include "net.h"
 #include "log.h"
 #include "util.h"
+
+const struct sockaddr* sockaddr_cast(const struct sockaddr_in *addr) {
+    return static_cast<const struct sockaddr*>(implicit_cast<const void*>(addr));
+}
+
+struct sockaddr* sockaddr_cast(struct sockaddr_in* addr) {
+    return reinterpret_cast<struct sockaddr*>(addr);
+}
 
 int Net::SetNonBlock(int fd, bool value) {
   int flags = fcntl(fd, F_GETFL, 0);

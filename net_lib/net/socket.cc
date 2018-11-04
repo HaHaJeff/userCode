@@ -1,4 +1,5 @@
 #include <netinet/tcp.h>
+#include "net.h"
 #include "socket.h"
 
 Socket::~Socket() {
@@ -36,5 +37,19 @@ bool Socket::GetTcpInfoString(char*buf, int len) const {
 }
 
 void Socket::BindAddress(const Ip4Addr& addr) {
-    
+    Net::Bind(sockfd_, sockaddr_cast(&addr.GetAddr()));
+}
+
+void Socket::Listen() {
+    Net::Listen(sockfd_);
+}
+
+int Socket::Accept(Ip4Addr& peerAddr) {
+    struct sockaddr_in addr;
+    bzero(&addr, sizeof(addr));
+    int connfd = Net::Accept(sockfd_, sockaddr_cast(&addr));
+    if (connfd >= 0) {
+        peerAddr.SetSockaddr(addr);
+    }
+    return connfd;
 }
