@@ -19,6 +19,8 @@ Poller是IO multiplexing的封装，负责管理channel的活动,需要一个容
 - Poll: Poller不做具体事件的执行，而是仅仅将活动的channel返回
 
 ### PollPoller: 继承自Poller
+- AddChanne: 向pollfds_中添加channel，其实会将channel转换成struct pollfd，为了更好的管理pollfds_，我们将channel对应的pollfds_中的index加入到channel中，方便管理
+- RemoveChannel: 从pollfds_中移除channel对应的struct pollfd
 
 - AddChannel: 将channel添加到pollfds_中，pollfds_是一个vector<struct pollfd>,不同于epoll，epoll的Addhannel需要将channel对应的epoll_event直接加入到epollfd中，系统调用，而poll在轮询的时候会将pollfds_全部传入到内核中；
 - RemoveChannel: 从pollfds_中删除对应的channel,然而如何删除？从基类中的channels_中查找对应channel对应的fd(channels_: map<Channel, int>),然后根据fd==pollfd.fd在pollfds_查找对应的struct pollfd，然后删除，muduo提供了一种简单高效率的做法，在Channel中添加一个字段index_，在Addhannel的时候设置index为pollfds_对应的位置，这样删除会非常迅速
