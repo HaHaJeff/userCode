@@ -58,3 +58,9 @@ if (events & POLLOUT) {
     - Timer中包含一个独一无二的sequence_id以区别不同的Timer
     - 为了方便管理，使用TimerID，其中包含sequence_id和Timer*，加速查找删除等操作。
     - TimerQueue, 管理所有的timer.
+
+### Socket
+封装了socket的基本操作
+- BindAddress(const Ip4Addr& localAddr) 绑定struct sockaddr结构体
+- Listen(); 开启监听
+- Accept(); 从连接建立完成队列中抽取一个已完成连接建立的套接字

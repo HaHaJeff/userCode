@@ -2,6 +2,7 @@
 #define TCPCONN_H
 
 #include <memory>
+#include "socket.h"
 #include "net.h"
 #include "buffer.h"
 #include "util.h"
@@ -21,7 +22,21 @@ public:
     EventLoop* GetLoop() const { return loop_; }
     const Ip4Addr GetLocalAddress() const { return localAddr_; }
     const Ip4Addr GetPeerAddress() const { return peerAddr_; }
-    bool IsConnected() const {}
+    bool IsConnected() const {return state_ == kConnected; }
+    bool GetTcpInfo(struct tcp_info*) const; 
+    std::string GetTcpinfoString() const;
+
+    void Send(const char* message, size_t len);
+    void Send(std::string&& message);
+    void Send(Buffer& message);
+    void Send(const char* s) { Send(s, strlen(s));}
+
+    void OnRead(const TcpCallBack& cb) { readcb_ = cb; }
+    void OnWrite(const TcpCallBack& cb) { writecb_ = cb; }
+    void OnState(const TcpCallBack& cb) { statecb_ = cb; }
+
+private:
+    
 
 private:
     EventLoop* loop_;
@@ -34,6 +49,8 @@ private:
     TcpCallBack writecb_;
     TcpCallBack statecb_;
 
+    std::unique_ptr<Socket> socket_;
+    std::unique_ptr<Channel> channel_;
 
 };
 
