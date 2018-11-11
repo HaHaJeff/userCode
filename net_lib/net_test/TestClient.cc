@@ -13,27 +13,30 @@
 #include "timerqueue.h"
 
 
-TEST(TestBase, TestClient) {
+int func() {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
+  Net::SetNonBlock(fd);
   Socket s(fd);
   Ip4Addr ip4("127.0.0.1", 9999);
-  s.BindAddress(ip4);
   const struct sockaddr* addr = sockaddr_cast(&ip4.GetAddr());
-  int fd = connect(fd, &addr, sizeof(struct sockaddr));
+  int connfd = connect(fd, addr, sizeof(struct sockaddr));
+  if (connfd == -1) {
+      printf("-1\n");
+  }
 
   struct pollfd pfd;
   pfd.fd = fd;
   pfd.events = POLLOUT | POLLERR;
 
+  //connect完成之后文件描述父可写
   int r = poll(&pfd, 1, 0);
 
   if (r == 1 && pfd.revents == POLLOUT) {
-    printf("connect");
+    printf("connect\n");
   }
 }
 
-
 int main()
 {
-  RunAllTests();
+    func();
 }
