@@ -1,6 +1,7 @@
 #include <poll.h>
 #include <atomic>
 #include <assert.h>
+#include <unistd.h>
 
 #include "channel.h"
 #include "eventloop.h"
@@ -88,4 +89,14 @@ std::string Channel::EventsToString(int fd, short ev) const {
     if (ev & POLLERR) result += "ERR";
     if (ev & POLLNVAL) result += "NVAL";
     return result;
+}
+
+void Channel::Close() {
+    if (fd_ >= 0) {
+        TRACE("close channel %ld fd %d", (long)id_, fd_);
+        RemoveFromLoop();
+        close(fd_);
+        fd_ = -1;
+        HandleRead();
+    }
 }

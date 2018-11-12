@@ -10,7 +10,6 @@
 
 class EventLoop;
 
-// chanenel不拥有fd
 class Channel : public Noncopyable {
 public:
     typedef std::function<void()> EventCallback;
@@ -51,6 +50,8 @@ public:
     std::string REventsToString() const;
     std::string EventsToString() const;
 
+    void Close();
+
 private:
     std::string EventsToString(int fd, short ev) const;
     void Update();
@@ -59,7 +60,7 @@ private:
     EventLoop* loop_;
     short events_;
     short revents_;
-    const int fd_;
+    int fd_;
     int64_t id_;
     int index_; 
     bool addedToThisLoop_;
