@@ -53,6 +53,8 @@ public:
     void Connect(EventLoop* loop, const Ip4Addr& local, const Ip4Addr& peer, int timeout=0);
     void Close();
 
+    void CleanUp(const TcpConnPtr& con);
+
 private:
     void Attach(EventLoop* loop, int fd, const Ip4Addr& local, const Ip4Addr& peer);
     void HandleRead(const TcpConnPtr& con);

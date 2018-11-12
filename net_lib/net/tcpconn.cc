@@ -70,6 +70,10 @@ void TcpConn::Close() {
     }
 }
 
+void TcpConn::CleanUp(const TcpConnPtr& con) {
+
+}
+
 void TcpConn::HandleRead(const TcpConnPtr& con) {
    if (state_ == State::kHandShakeing && HandleHandShake(con)) {
        return;
@@ -110,6 +114,8 @@ int TcpConn::HandleHandShake(const TcpConnPtr& con) {
         }
     } else {
         TRACE("poll fd %d return %d revents %d", channel_->GetFd(), r, pfd.revents);
+        CleanUp(con);
         return -1;
     }
+    return 0;
 }
