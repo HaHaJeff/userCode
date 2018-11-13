@@ -28,6 +28,8 @@ public:
     
     void EnableRead() { events_ |= kReadEvent; Update(); }
     void EnableWrite() { events_ |= kWriteEvent; Update(); }
+    void DisableRead() { events_ &= ~kReadEvent; Update(); }
+    void DisableWrite() { events_ &= ~kWriteEvent; Update(); }
     bool IsWriting() const { return events_ & kWriteEvent; }
     bool IsReading() const { return events_ & kReadEvent; }
 

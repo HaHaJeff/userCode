@@ -140,3 +140,17 @@ int TcpConn::HandleHandShake(const TcpConnPtr& con) {
     }
     return 0;
 }
+
+void TcpConn::HandleWrite(const TcpConnPtr& con) {
+    if (state_ == State::kHandShakeing) {
+        HandleHandShake(con);
+    } else if (state_ == State::kConnected) {
+        ssize_t sended = ISend(output_.Begin(), output_.GetSize());
+        output_.Consume(sended);
+        if (output_.IsEmpty() && channel_->IsWriting()) {
+            channel_->DisableWrite();
+        }
+    } else {
+        ERROR("handle write unexpected");
+    }
+}

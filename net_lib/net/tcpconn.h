@@ -45,6 +45,7 @@ public:
     void Send(const std::string& message);
     void Send(Buffer& message);
     void Send(const char* s) { Send(s, strlen(s));}
+    ssize_t ISend(const char* buf, size_t len);
 
     void OnRead(const TcpCallBack& cb) { readcb_ = cb; }
     void OnWrite(const TcpCallBack& cb) { writecb_ = cb; }
