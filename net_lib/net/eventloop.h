@@ -36,6 +36,7 @@ public:
     TimerId RunAfter(double delay, const TimerCallback& cb);
     TimerId RunAfter(double delay, TimerCallback&& cb);
 
+    void Cancel(TimerId timerId);
 private:
     // for wake up;
     void HandleRead();

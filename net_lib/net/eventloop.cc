@@ -104,3 +104,7 @@ void EventLoop::HandleRead() {
         ERROR("EventLoop::HandleRead() reads %d bytes instead of 8", n);
     }
 }
+
+void EventLoop::Cancel(TimerId timerid) {
+    timerQueue_->Cancel(timerid);
+}

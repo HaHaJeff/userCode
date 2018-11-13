@@ -2,6 +2,7 @@
 #include "log.h"
 #include "channel.h"
 #include <poll.h>
+#include <functional>
 
 void TcpConn::Attach(EventLoop* loop, int fd, const Ip4Addr& local, const Ip4Addr& peer) {
     loop_ = loop;
@@ -71,7 +72,26 @@ void TcpConn::Close() {
 }
 
 void TcpConn::CleanUp(const TcpConnPtr& con) {
+    if (readcb_ && input_.GetSize()) {
+        readcb_(con);
+    }
+    if (state_ == State::kHandShakeing) {
+        state_ = State::kFailed;
+    } else {
+        state_ = State::kClosed;
+    }
 
+    TRACE("tcp closeing %s - %s fd %d %d",
+        localAddr_.ToString().c_str(),
+        peerAddr_.ToString().c_str(),
+        channel_ ? channel_->GetFd(): -1, errno);
+    loop_->Cancel(timeoutId_);
+
+    if (statecb_) {
+        statecb_(con);
+    }
+
+    readcb_ = writecb_ = statecb_ = nullptr;
 }
 
 void TcpConn::HandleRead(const TcpConnPtr& con) {
@@ -90,8 +110,9 @@ void TcpConn::HandleRead(const TcpConnPtr& con) {
            continue;
        } else if(rd == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
            break;
-       } else if (rd == -1) {
-           ERROR("read error TcpConn channel id:%d, ip info: %s", channel_->GetId(), localAddr_.ToString());
+       } else if (channel_->GetFd() == -1 || rd == -1) {
+           CleanUp(con);
+           break;
        } else {
            input_.AddSize(rd);
        }
