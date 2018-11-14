@@ -56,7 +56,6 @@ int main()
 
     std::cout << "vnode: " << iter->second.ToStr() << "\thash: " << iter->first << "\t contains:" << last->first - iter->first << std::endl;
 
-
     while (++iter != chash.End()) {
         std::cout << "vnode: " << iter->second.ToStr() << "\thash: " << iter->first << "\t contains:" << iter->first - prev->first << std::endl;
         prev = iter;
