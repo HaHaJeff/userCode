@@ -16,7 +16,7 @@ public:
 
 		vector<string> result;
 
-		helper(s, 0, s.length() - 1, result, results);
+		helper(s, 0, result, results);
 		return results;
 	}
 
@@ -32,6 +32,22 @@ public:
 
 			result.push_back(s.substr(start, len+1));
 			helper(s, start + len + 1, end, result, results);
+			result.pop_back();
+		}
+	}
+
+	void helper(const string& s, int start, vector<string>& result, vector<vector<string>>& results) {
+
+		if (start >= s.length()) {
+			results.push_back(result);
+			return;
+		}
+
+		for (int i=start; i < s.length(); i++) {
+			if (!isPalindrome(start, i, s)) continue;
+
+			result.push_back(s.substr(start, i-start+1));
+			helper(s, i+1, result, results);
 			result.pop_back();
 		}
 	}
