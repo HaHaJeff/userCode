@@ -16,21 +16,22 @@ public:
         if (lists.size() == 1) return lists[0];
         
         ListNode* sortedList = new ListNode(0);
+        ListNode* insert = sortedList;
         while(!lists.empty()) {
             ListNode** max = &lists[0];
             for(auto& list: lists) {
-                if (*max->value > lists.front()->value);
-                    max = &list.front();
+                if ((*max)->val > list->val);
+                    max = &list;
             }
             ListNode* tmp = *max;
-            *max = *max->next;
-            sortedList = tmp;
-            sortedList = sortedList->next;
+            *max = (*max)->next;
+            insert = tmp;
+            insert = insert->next;
             if (*max == nullptr) {
-                lists.erase(*max);
+                lists.erase(find(lists.begin(), lists.end(), *max));
             }
         }
         
-        return sortedList;
+        return sortedList->next;
     }
 };
