@@ -2,6 +2,7 @@
 #define TCPCONN_H
 
 #include <memory>
+#include <assert.h>
 #include "socket.h"
 #include "net.h"
 #include "buffer.h"
@@ -16,6 +17,7 @@ typedef std::function<void(const TcpConnPtr&, std::string msg)> MsgCallBack;
 class TcpConn : public std::enable_shared_from_this<TcpConn>, private Noncopyable{
 public:
     enum State { kInvalid = 1, kHandShakeing, kConnected, kClosed, kFailed };
+    TcpConn() {}
     TcpConn(EventLoop* loop, const Ip4Addr& local, const Ip4Addr& peer, int timeout=0);
     virtual ~TcpConn();
 
@@ -37,12 +39,12 @@ public:
     const Ip4Addr GetLocalAddress() const { return localAddr_; }
     const Ip4Addr GetPeerAddress() const { return peerAddr_; }
     bool IsConnected() const {return state_ == kConnected; }
-    bool GetTcpInfo(struct tcp_info*) const; 
-    std::string GetTcpinfoString() const;
+    bool GetTcpInfo(struct tcp_info* info) const { assert(IsConnected()); socket_->GetTcpInfo(info);} 
+    std::string GetTcpinfoString() const { char buf[1024]; socket_->GetTcpInfoString(buf, 1024); return buf;}
     State GetState() const { return state_; }
 
     void Send(const char* message, size_t len);
-    void Send(const std::string& message);
+    void Send(const std::string& message) { Send(message.c_str()); }
     void Send(Buffer& message);
     void Send(const char* s) { Send(s, strlen(s));}
     ssize_t ISend(const char* buf, size_t len);

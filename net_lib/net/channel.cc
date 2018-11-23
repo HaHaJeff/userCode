@@ -97,6 +97,5 @@ void Channel::Close() {
         RemoveFromLoop();
         close(fd_);
         fd_ = -1;
-        HandleRead();
     }
 }

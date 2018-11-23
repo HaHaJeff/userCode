@@ -4,6 +4,21 @@
 #include <poll.h>
 #include <functional>
 
+
+TcpConn::TcpConn(EventLoop* loop, const Ip4Addr& local, const Ip4Addr& peer, int timeout) :
+    loop_(loop),
+    localAddr_(local),
+    peerAddr_(peer),
+    connectTimeout_(timeout)
+{
+}    
+
+TcpConn::~TcpConn() {
+    if (channel_->IsInLoop()) {
+        channel_->RemoveFromLoop();
+    }
+}
+
 void TcpConn::Attach(EventLoop* loop, int fd, const Ip4Addr& local, const Ip4Addr& peer) {
     loop_ = loop;
     state_ = State::kHandShakeing;
@@ -12,7 +27,9 @@ void TcpConn::Attach(EventLoop* loop, int fd, const Ip4Addr& local, const Ip4Add
 
     Channel* ch = new Channel(loop, fd);
     fd_ = fd;
+    socket_.reset(new Socket(fd));
     channel_.reset(ch);
+    channel_->AddToLoop();
     TRACE("tcp constructed %s - %s fd: %d", localAddr_.ToString().c_str(), peerAddr_.ToString().c_str(), fd);
 
     TcpConnPtr conn = shared_from_this();
@@ -30,10 +47,10 @@ void TcpConn::Connect(EventLoop* loop, const Ip4Addr& local, const Ip4Addr& peer
     Net::SetNonBlock(fd);
     
     int r = 0;
-    r = bind(fd, sockaddr_cast(&peerAddr_.GetAddr()), sizeof(struct sockaddr));
+    r = bind(fd, sockaddr_cast(&localAddr_.GetAddr()), sizeof(struct sockaddr));
 
     if (r < 0) {
-        ERROR("bind to %s failed error %d %s", peerAddr_.ToString().c_str(), errno, strerror(errno));
+        ERROR("bind to %s failed error %d %s", localAddr_.ToString().c_str(), errno, strerror(errno));
     }
     if (r == 0) {
         r = connect(fd, sockaddr_cast(&peer.GetAddr()), sizeof(struct sockaddr));
@@ -49,8 +66,7 @@ void TcpConn::Connect(EventLoop* loop, const Ip4Addr& local, const Ip4Addr& peer
     if (r == 0) {
         r = getsockname(fd, sockaddr_cast(&localin), &len);
         if (r < 0) {
-            ERROR("getsockname failed %d %s", errno, strerror(errno));
-        }
+            ERROR("getsockname failed %d %s", errno, strerror(errno)); }
     }
 
     state_ = State::kHandShakeing;
@@ -152,5 +168,61 @@ void TcpConn::HandleWrite(const TcpConnPtr& con) {
         }
     } else {
         ERROR("handle write unexpected");
+    }
+}
+
+ssize_t TcpConn::ISend(const char* buf, size_t len) {
+    size_t sended = 0;
+    while (len > sended) {
+        ssize_t wd = write(channel_->GetFd(), buf + sended, len - sended);
+        TRACE("channel %lld fd %d write %lld bytes", (long long)channel_->GetId(), channel_->GetFd(), wd);
+        if (wd > 0) {
+            sended += wd;
+            continue;
+        } else if(wd == -1 && errno == EINTR) { // 慢速系统调用，信号打断
+            continue;
+        } else if (wd == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) { // 非阻塞fd
+            if (!channel_-> IsWriting()) {
+                channel_->EnableWrite();
+            }
+            break;
+        } else {
+            ERROR("write error: channel %lld fd %d wd %ld %ld %s", channel_->GetId(), channel_->GetFd(), wd, errno, strerror(errno));
+            break;
+        }
+    }
+    return sended;
+}
+
+void TcpConn::Send(Buffer& message) {
+    if (channel_) {
+        // 如果channel开启了写，则将message直接添加到output中
+        if (channel_->IsWriting()) {
+            output_.Absorb(message);
+        } else if (message.GetSize()) {
+            ssize_t sended = ISend(message.Begin(), message.GetSize());
+            message.Consume(sended);
+            if (message.GetSize()) {
+                output_.Absorb(message);
+                if (!channel_->IsWriting()) channel_->EnableWrite();
+            }
+        }
+    } else {
+        WARN("connection %s - %s closed, but still writing %lu bytes", localAddr_.ToString().c_str(), peerAddr_.ToString(), message.GetSize());
+    }
+}
+
+void TcpConn::Send(const char* message, size_t len) {
+    if (channel_) {
+        if(output_.IsEmpty()) {
+            ssize_t sended = ISend(message, len);
+            message += sended;
+            len -= sended;
+        }
+        if (len) {
+            output_.Append(message, len);
+        }
+    } else {
+        WARN("connection %s - %s closed, but still writing %lu bytes", localAddr_.ToString().c_str(), peerAddr_.ToString(), len);
     }
 }

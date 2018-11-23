@@ -11,15 +11,20 @@
 #include "processinfo.h"
 #include "net_test.h"
 #include "timerqueue.h"
+#include "tcpconn.h"
 
 
 int func() {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   Net::SetNonBlock(fd);
   Socket s(fd);
+  Ip4Addr local("127.0.0.1", 8888);
   Ip4Addr ip4("127.0.0.1", 9999);
-  const struct sockaddr* addr = sockaddr_cast(&ip4.GetAddr());
-  int connfd = connect(fd, addr, sizeof(struct sockaddr));
+
+  EventLoop* loop = new EventLoop();
+  auto ptr = TcpConn::CreateConnection<TcpConn>(loop, local, ip4);
+
+  /*
   if (connfd == -1) {
       printf("-1\n");
   }
@@ -34,6 +39,7 @@ int func() {
   if (r == 1 && pfd.revents == POLLOUT) {
     printf("connect\n");
   }
+  */
 }
 
 int main()
