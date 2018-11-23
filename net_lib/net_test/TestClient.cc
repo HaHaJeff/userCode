@@ -24,6 +24,9 @@ int func() {
   EventLoop* loop = new EventLoop();
   auto ptr = TcpConn::CreateConnection<TcpConn>(loop, local, ip4);
 
+  ptr->Send("123", 3);
+
+  loop->Loop();
   /*
   if (connfd == -1) {
       printf("-1\n");

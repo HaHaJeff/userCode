@@ -30,6 +30,7 @@ void TcpConn::Attach(EventLoop* loop, int fd, const Ip4Addr& local, const Ip4Add
     socket_.reset(new Socket(fd));
     channel_.reset(ch);
     channel_->AddToLoop();
+
     TRACE("tcp constructed %s - %s fd: %d", localAddr_.ToString().c_str(), peerAddr_.ToString().c_str(), fd);
 
     TcpConnPtr conn = shared_from_this();
