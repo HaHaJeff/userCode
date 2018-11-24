@@ -50,8 +50,10 @@ if (events & POLLOUT) {
 
 
 ### TcpConn
-封装Tcp connection，如果文件描述符是非阻塞的，对connect需要进行
-额外的一次poll判断
+封装Tcp connection
+如果文件描述符是非阻塞的，对connect需要进行额外的一次poll判断
+封装了send调用，优先会往ouput buffer写,在出发handlewrite时会对output进行一次consume操作
+
 
 ### util
 一些基础功能，例如时间相关，以及字符串转换成int
