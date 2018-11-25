@@ -56,6 +56,18 @@ TEST(TestBase, Socket) {
   std::cout << "Socket tcp info: ";
   s.GetTcpInfoString(buf, 1024);
   std::cout << buf << std::endl;
+
+  int ret = 0;
+  while (1) {
+    ret = read(connfd, buf, sizeof(buf));
+    if (ret == -1) {
+      continue;
+    } else {
+      break;
+    }
+  }
+  std::cout << "read bytes: " << ret << " content: "<<  buf << std::endl;
+
 }
 
 TEST(TestBase, TimerQueue) {

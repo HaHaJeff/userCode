@@ -26,6 +26,18 @@ Channel::Channel(EventLoop* loop, int fd)
     id_ = ++id;
 }
 
+Channel::Channel(EventLoop* loop, int fd, int events)
+    : loop_(loop),
+      fd_(fd),
+      events_(events),
+      revents_(0),
+      id_(-1),
+      addedToThisLoop_(false)
+{
+    static std::atomic<int64_t> id(0);
+    id_ = ++id;
+}
+
 
 Channel::~Channel() {
     assert(!addedToThisLoop_);

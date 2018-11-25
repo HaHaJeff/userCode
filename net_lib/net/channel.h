@@ -15,6 +15,7 @@ public:
     typedef std::function<void()> EventCallback;
 
     Channel(EventLoop* loop, int fd);
+    Channel(EventLoop* loop, int fd, int events);
     ~Channel();
 
     void SetReadCallback(const EventCallback& cb) { readCallback_ = cb;}
@@ -73,6 +74,7 @@ private:
     EventCallback closeCallback_;
     EventCallback errorCallback_;
 
+public:
     static const int kReadEvent;
     static const int kWriteEvent;
 };

@@ -25,7 +25,7 @@ void TcpConn::Attach(EventLoop* loop, int fd, const Ip4Addr& local, const Ip4Add
     localAddr_ = local;
     peerAddr_ = peer; 
 
-    Channel* ch = new Channel(loop, fd);
+    Channel* ch = new Channel(loop, fd, Channel::kWriteEvent | Channel::kReadEvent);
     fd_ = fd;
     socket_.reset(new Socket(fd));
     channel_.reset(ch);
@@ -148,7 +148,7 @@ int TcpConn::HandleHandShake(const TcpConnPtr& con) {
         state_ = State::kConnected;
         if (state_ == State::kConnected) {
             connectedTimeout_ = Util::TimeMilli();
-            TRACE("tcp connected %s - %s fd %d", localAddr_.ToString().c_str(), peerAddr_.ToString(), channel_->GetFd());
+            TRACE("tcp connected %s - %s fd %d", localAddr_.ToString().c_str(), peerAddr_.ToString().c_str(), channel_->GetFd());
         }
     } else {
         TRACE("poll fd %d return %d revents %d", channel_->GetFd(), r, pfd.revents);
