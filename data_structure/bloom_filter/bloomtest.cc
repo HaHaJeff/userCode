@@ -13,7 +13,7 @@ std::vector<Test>* getVectorTest() {
   return &tests;
 }
 
-bool registerTest(const char* base, const char* name, void (*func)()) {
+bool RegisterTest(const char* base, const char* name, void(*func)()) {
   std::vector<Test>* tests = getVectorTest();
 
   Test t;
@@ -24,7 +24,7 @@ bool registerTest(const char* base, const char* name, void (*func)()) {
   return true;
 }
 
-int runAllTest() {
+int runAllTests() {
   std::vector<Test>* tests = getVectorTest();
 
   if (tests->size() != 0) {
@@ -35,3 +35,4 @@ int runAllTest() {
   }
   return 0;
 }
+
