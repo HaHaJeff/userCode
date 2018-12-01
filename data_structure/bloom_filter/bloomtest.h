@@ -15,7 +15,7 @@ bool registerTest(const char* base, const char* name, void(*func)());
 class TCONCAT(_Test_, name) : public base {                  \
   public:                                                    \
     void run();                                              \
-    static void RunIt() {                                    \
+    static void runIt() {                                    \
       TCONCAT(_Test_, name) t;                               \
       t.run();                                               \
     }                                                        \
