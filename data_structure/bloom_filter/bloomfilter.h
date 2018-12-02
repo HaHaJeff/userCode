@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 const  uint32_t gMagicHash = 0xbc9f1d34;
 
@@ -28,7 +29,7 @@ class BloomFilter {
     BloomFilter(const int32_t n, const double flasePositiveP);
     void insert(const T& key);
     bool keyMayMatch(const T& key);
-
+    void printSelf();
   private:
     std::vector<char> bits_;
     int32_t k_;  //hash函数个数
@@ -61,14 +62,24 @@ void BloomFilter<T>::insert(const T& key) {
 
 template<typename T>
 bool BloomFilter<T>::keyMayMatch(const T& key) {
-  uint32_t hashVal = key.hash(gMagicHash);
+  uint32_t hashVal = gMagicHash;
   for (int i = 0; i < k_; ++i) {
+    hashVal = key.hash(hashVal);
     const uint32_t bitPos = hashVal % m_;
     if ((bits_[bitPos/8] & (1<<(bitPos%8))) == 0) {
       return false;
     }
   }
   return true;
+}
+
+template<typename T>
+void BloomFilter<T>::printSelf() {
+  std::cout << "hash func num: " << k_ << std::endl;
+  std::cout << "bloomfilter size: " << m_ << std::endl;
+  std::cout << "data num: " << n_ << std::endl;
+  std::cout << "fasle false positive: " << p_ << std::endl;
+
 }
 
 #endif

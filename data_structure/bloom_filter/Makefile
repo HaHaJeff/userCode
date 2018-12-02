@@ -6,7 +6,7 @@ CXXFLAGS += -I./ $(OPT) -std=c++11
 NET_SOURCES = $(shell find ./ -name '*.cc')
 NET_OBJ = $(NET_SOURCES:.cc=.o)
 
-all: test
+all: test clean
 
 #daemon :$(TEST_OBJ) $(NET_OBJ)
 #	$(CXX) $^ -o $@
