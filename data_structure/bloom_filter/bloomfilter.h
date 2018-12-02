@@ -30,6 +30,11 @@ class BloomFilter {
     void insert(const T& key);
     bool keyMayMatch(const T& key);
     void printSelf();
+
+#ifdef OPT
+    void insertOpt(const T & key);
+    bool keyMayMatchOpt(const T& key);
+#endif
   private:
     std::vector<char> bits_;
     int32_t k_;  //hash函数个数
@@ -51,7 +56,6 @@ BloomFilter<T>::BloomFilter(const int32_t n, const double falsePositiveP)
 
 template<typename T>
 void BloomFilter<T>::insert(const T& key) {
-
   uint32_t hashVal = gMagicHash;
   for (int i = 0; i < k_; ++i) {
     hashVal = key.hash(hashVal);
@@ -79,7 +83,33 @@ void BloomFilter<T>::printSelf() {
   std::cout << "bloomfilter size: " << m_ << std::endl;
   std::cout << "data num: " << n_ << std::endl;
   std::cout << "fasle false positive: " << p_ << std::endl;
-
 }
+
+#ifdef OPT
+template<typename T>
+void BloomFilter<T>::insertOpt(const T& key) {
+  uint32_t hashVal = key.hash(gMagicHash);
+  const uint32_t delta = (hashVal >> 17) | (hashVal << 15);
+  for (int i = 0; i < k_; ++i) {
+    const uint32_t bitPos = hashVal % m_;
+    bits_[bitPos/8] |= 1 << (bitPos%8);
+    hashVal += delta;
+  }
+}
+
+template<typename T>
+bool BloomFilter<T>::keyMayMatchOpt(const T& key) {
+  uint32_t hashVal = key.hash(gMagicHash);
+  const uint32_t delta = (hashVal >> 17) | (hashVal << 15);
+  for (int i = 0; i < k_; ++i) {
+    const uint32_t bitPos = hashVal % m_;
+    if ((bits_[bitPos/8] & (1<<(bitPos%8))) == 0) {
+      return false;
+    }
+    hashVal += delta;
+  }
+  return true;
+}
+#endif
 
 #endif
