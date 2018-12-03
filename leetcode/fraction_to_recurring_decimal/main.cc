@@ -6,29 +6,32 @@ using namespace std;
 
 class Solution {
 public:
-	string fractionToDecimal(int numerator, int denominator) {
+	string fractionToDecimal(long long numerator, long long denominator) {
 		stringstream ss;
 		string fraction = (numerator * denominator < 0) ? "-" : "";
-
+		numerator = abs(numerator);
+		denominator = abs(denominator);
 		long long result = numerator / denominator;
 		long long remainder = numerator % denominator;
 
 		intToString(ss, result);
 
 		fraction += ss.str();
-        std::unordered_map<long long, size_t> table;
+
+		if (remainder == 0) { return fraction; }
+		std::unordered_map<long long, size_t> table;
 		fraction += '.';
-		while (remainder && table.find(result) == table.end()) {
+		while (remainder && table.find(remainder) == table.end()) {
+			table.emplace(remainder, fraction.size());
 			result = remainder * 10 / denominator;
 			remainder = remainder * 10 % denominator;
 			fraction += static_cast<char>(result + '0');
-			table.emplace(result, fraction.size() - 1);
 		}
 
-        if (remainder!= 0) {
-            fraction.insert(table[result], 1, '(');
-            fraction += ')';
-        }
+		if (remainder != 0) {
+			fraction.insert(table[remainder], 1, '(');
+			fraction += ')';
+		}
 		return fraction;
 	}
 
@@ -36,10 +39,3 @@ public:
 		ss << num;
 	}
 };
-
-int main()
-{
-    Solution sol;
-    std::cout << sol.fractionToDecimal(4, 6) << std::endl;
-
-}
