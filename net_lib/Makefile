@@ -27,4 +27,4 @@ TestClient :net_test/net_test.o net_test/TestClient.o $(NET_OBJ)
 
 .PHONY: clean
 clean:
-	rm $(TEST_OBJ) $(NET_OBJ)
+	rm $(TEST_OBJ) $(NET_OBJ) daemon TestClient *.log

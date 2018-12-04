@@ -39,7 +39,7 @@ public:
     const Ip4Addr GetLocalAddress() const { return localAddr_; }
     const Ip4Addr GetPeerAddress() const { return peerAddr_; }
     bool IsConnected() const {return state_ == kConnected; }
-    bool GetTcpInfo(struct tcp_info* info) const { assert(IsConnected()); socket_->GetTcpInfo(info);} 
+    bool GetTcpInfo(struct tcp_info* info) const { assert(IsConnected()); socket_->GetTcpInfo(info); return true;}
     std::string GetTcpinfoString() const { char buf[1024]; socket_->GetTcpInfoString(buf, 1024); return buf;}
     State GetState() const { return state_; }
 

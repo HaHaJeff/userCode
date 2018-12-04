@@ -13,7 +13,6 @@ std::vector<Test>* GetVectorTest() {
   return &tests;
 }
 
-
 bool RegisterTest(const char* base, const char* name, void(*func)()) {
   std::vector<Test>* tests = GetVectorTest();
 

@@ -3,7 +3,7 @@
 
 int RunAllTests();
 
-bool RegisterTest(const char*base, const char* name, void(*func)());
+bool RegisterTest(const char* base, const char* name, void(*func)());
 
 //为什么这么写？
 //如果不通过宏定义调用宏定义，那么被调用的宏定义将不会被展开
