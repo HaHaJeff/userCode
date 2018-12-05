@@ -8,6 +8,7 @@
 #include "buffer.h"
 #include "util.h"
 #include "eventloop.h"
+#include "codec.h"
 
 class TcpConn;
 typedef std::shared_ptr<TcpConn> TcpConnPtr;
@@ -43,20 +44,30 @@ public:
     std::string GetTcpinfoString() const { char buf[1024]; socket_->GetTcpInfoString(buf, 1024); return buf;}
     State GetState() const { return state_; }
 
+    void SendOutput() { Send(output_); }
     void Send(const char* message, size_t len);
     void Send(const std::string& message) { Send(message.c_str()); }
     void Send(Buffer& message);
     void Send(const char* s) { Send(s, strlen(s));}
     ssize_t ISend(const char* buf, size_t len);
 
+    //数据到达时回调
     void OnRead(const TcpCallBack& cb) { readcb_ = cb; }
+    //数据可写时回调
     void OnWrite(const TcpCallBack& cb) { writecb_ = cb; }
+    //状态改变时回调
     void OnState(const TcpCallBack& cb) { statecb_ = cb; }
+
+    void OnMsg(CodecBase* codec, const MsgCallBack& cb);
+    void SendMsg(std::string msg);
 
     void Connect(EventLoop* loop, const Ip4Addr& local, const Ip4Addr& peer, int timeout=0);
     void Close();
 
     void CleanUp(const TcpConnPtr& con);
+
+    Buffer& GetInput() { return input_; }
+    Buffer& GetOutput() { return output_; }
 
 private:
     void Attach(EventLoop* loop, int fd, const Ip4Addr& local, const Ip4Addr& peer);
@@ -76,6 +87,7 @@ private:
     TcpCallBack statecb_;
     std::unique_ptr<Socket> socket_;
     std::unique_ptr<Channel> channel_;
+    std::unique_ptr<CodecBase> codec_;
     int connectedTimeout_;
     int connectTimeout_;
     TimerId timeoutId_;

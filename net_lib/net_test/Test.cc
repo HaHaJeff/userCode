@@ -58,17 +58,21 @@ TEST(TestBase, Socket) {
   s.GetTcpInfoString(buf, 1024);
   std::cout << buf << std::endl;
 
+  bzero(buf, sizeof(buf));
+
   int ret = 0;
   while (1) {
     ret = read(connfd, buf, sizeof(buf));
     if (ret == -1) {
+      std::cout << "ret == -1" << std::endl;
       continue;
     } else {
       break;
     }
   }
   std::cout << "read bytes: " << ret << " content: "<<  buf << std::endl;
-
+  ret = send(connfd, buf, 4, 0);
+  if (ret == -1) perror("send ");
 }
 
 TEST(TestBase, TimerQueue) {

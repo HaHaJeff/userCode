@@ -24,7 +24,11 @@ int func() {
   EventLoop* loop = new EventLoop();
   auto ptr = TcpConn::CreateConnection<TcpConn>(loop, local, ip4);
 
-//  ptr->Send("123", 3);
+  ptr->OnMsg(new LineCode(), [&](const TcpConnPtr& con, const std::string& msg) {
+        std::cout << "echo: " << msg << std::endl;
+      });
+
+  ptr->SendMsg("123");
 
   loop->Loop();
   /*

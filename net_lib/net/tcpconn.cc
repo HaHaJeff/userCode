@@ -120,14 +120,17 @@ void TcpConn::HandleRead(const TcpConnPtr& con) {
        int rd = 0;
        if (channel_->GetFd() >= 0) {
            rd = read(channel_->GetFd(), input_.End(), input_.GetSpace());
-           TRACE("channel %lld fd %d reader %d bytes", (long long)channel_->GetId(), channel_->GetFd(), rd);
+           TRACE("channel %lld fd %d read %d bytes", (long long)channel_->GetId(), channel_->GetFd(), rd);
        }
        // Teh call interrupted by signal
        if (rd == -1 && errno == EINTR) {
            continue;
        } else if(rd == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+           if (readcb_ && input_.GetSize()) {
+               readcb_(con);
+           }
            break;
-       } else if (channel_->GetFd() == -1 || rd == -1) {
+       } else if (channel_->GetFd() == -1 || rd == -1 || rd == 0) {
            CleanUp(con);
            break;
        } else {
@@ -149,6 +152,7 @@ int TcpConn::HandleHandShake(const TcpConnPtr& con) {
         if (state_ == State::kConnected) {
             connectedTimeout_ = Util::TimeMilli();
             TRACE("tcp connected %s - %s fd %d", localAddr_.ToString().c_str(), peerAddr_.ToString().c_str(), channel_->GetFd());
+            if (statecb_) { statecb_;}
         }
     } else {
         TRACE("poll fd %d return %d revents %d", channel_->GetFd(), r, pfd.revents);
@@ -226,4 +230,28 @@ void TcpConn::Send(const char* message, size_t len) {
     } else {
         WARN("connection %s - %s closed, but still writing %lu bytes", localAddr_.ToString().c_str(), peerAddr_.ToString(), len);
     }
+}
+
+void TcpConn::OnMsg(CodecBase* codec, const MsgCallBack& cb) {
+    assert(!readcb_);
+    codec_.reset(codec);
+    OnRead([cb](const TcpConnPtr& con) {
+        int r = 1;
+        while (r) {
+            std::string msg;
+            r = con->codec_->TryDecode(con->GetInput().GetData(), msg);
+
+            if (r < 0) {
+                con->channel_->Close();
+            } else {
+                cb(con, msg);
+                con->GetInput().Consume(r);
+            }
+        }
+    });
+}
+
+void TcpConn::SendMsg(std::string msg) {
+    codec_->Encode(msg, GetOutput());
+    SendOutput();
 }
