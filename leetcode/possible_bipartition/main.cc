@@ -7,14 +7,15 @@ class Solution {
 public:
 	bool possibleBipartition(int N, vector<vector<int>>& dislikes) {
 
-
+		graph.resize(N + 1);
+		visited.resize(N + 1, -1);
 		for (auto edge : dislikes) {
 			graph[edge[0]].push_back(edge[1]);
-		//	graph[edge[1]].push_back(edge[0]);
+			graph[edge[1]].push_back(edge[0]);
 		}
 
-		for (auto p : graph) {
-			if (visited.find(p.first) == visited.end() && !dfs(p.first, 0)) {
+		for (int p = 1; p <= N; p++) {
+			if (visited[p] == -1 && !dfs(p, 0)) {
 				return false;
 			}
 		}
@@ -23,7 +24,7 @@ public:
 	} 
 
 	bool dfs(int node, int color) {
-		if (visited.find(node) != visited.end()) {
+		if (visited[node] != -1) {
 			return visited[node] == color;
 		}
 
@@ -40,9 +41,9 @@ public:
 
 private:
 	// first means nodeid, second means edge
-	std::map<int, vector<int>> graph;
+	std::vector <vector<int>> graph;
 	// first means nodeid, second means color
-	std::map<int, int> visited;
+	std::vector<int> visited;
 };
 
 int main()
