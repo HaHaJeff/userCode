@@ -1,7 +1,3 @@
-#include <vector>
-#include <iostream>
-using namespace std;
-
 // 记录一个最小值和一个次小值
 class Solution {
 public:
@@ -9,13 +5,14 @@ public:
 		int min = INT_MAX, secMin = INT_MAX;
 
 		for (auto num : nums) {
-			if (num < min) {
+			if (num <= min) {
 				min = num;
 			}
-			else if (num < secMin) {
-				secMin = min;
+			else if (num <= secMin) {
+				secMin = num;
 			}
 			else {
+                std::cout << min << " " << secMin << " " << num << std::endl;
 				return true;
 			}
 		}
@@ -23,9 +20,3 @@ public:
  	}
 };
 
-int main()
-{
-	Solution sol;
-	vector<int> nums = { 1,2,3,4,5 };
-	std::cout << sol.increasingTriplet(nums) << std::endl;
-}
