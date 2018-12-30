@@ -14,7 +14,7 @@
 const int Channel::kWriteEvent = POLLOUT;
 const int Channel::kReadEvent = POLLIN | POLLPRI;
 
-Channel::Channel(EventLoop* loop, int fd) 
+Channel::Channel(EventLoop* loop, int fd)
     : loop_(loop),
       fd_(fd),
       events_(0),
@@ -41,7 +41,9 @@ Channel::Channel(EventLoop* loop, int fd, int events)
 
 Channel::~Channel() {
     assert(!addedToThisLoop_);
+    if (fd_ != -1) Close();
 }
+
 
 // response event change from loop_
 // EventLoop will change the channel's revents_
