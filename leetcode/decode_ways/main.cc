@@ -30,7 +30,7 @@ public:
 	// f(i) = f(i-1)+f(i-2);
 	int numDP(const string& s) {
 
-		if (s.size() >= 1 && s.size() == '0') return 0;
+		if (s.size() >= 1 && s[0] == '0') return 0;
 		if (s.size() == 0) return 0;
 
 		vector<int> dp(s.length() + 1);
@@ -47,4 +47,12 @@ public:
 	}
 
 };
-
+//
+//int main()
+//{
+//	Solution sol;
+//
+//	string s = "2222";
+//	
+//	std::cout << sol.numDecodings(s) << std::endl;
+//}
