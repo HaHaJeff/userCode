@@ -51,7 +51,7 @@ CoContextRuntime通过vector对协程进行保存，完成工作的协程通过�
 一个引用计数的c++实现
 
 ## net_lib
-一个网络库,参考muduo和handy
+一个基于c++11的网络库，实现思路借鉴自muduo
 
 ## lru_cache
 lru C++实现
