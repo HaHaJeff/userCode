@@ -22,8 +22,7 @@ namespace cache {
       LRUCache(size_t max_size) : max_size_(max_size){}
 
       // 新数据插入链表头部
-      // 如果新数据已经存在，那么在插入之后进行删除, 为了提高效率，采用一个unorder_map
-      // 对数据位置进行记录
+      // 如果新数据已经存在，那么在插入之后进行删除, 为了提高效率，采用一个unorder_map对数据位置进行记录
       // 如果超出缓存长度，删除尾部
       void Put(const key_t& key, const value_t& value) {
         auto iter = cache_items_map_.find(key);
