@@ -12,11 +12,12 @@ public:
         }
         int cnt = 0;
         for (int i = start; i < nums.size(); i++) {
-            swap(nums[start], nums[i]);
-            if (nums[i] % (i+1) == 0 || (i+1) % nums[i] == 0) {
+            if (nums[i] % (start+1) == 0 || (start+1) % nums[i] == 0) {
+                swap(nums[start], nums[i]);
                 cnt += helper(nums, start+1);   
+                swap(nums[i], nums[start]);
             }
-            swap(nums[i], nums[start]);
+            
         }
         return cnt;
     }
