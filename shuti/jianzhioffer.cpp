@@ -2,7 +2,7 @@
 
 // 二维数组查找
 //思路：从左下角开始遍历，缩小查找范围
-class Solution {
+class Solution1 {
 public:
 	bool Find(int target, vector<vector<int> > array) {
 		int row = array.size() - 1;
@@ -18,7 +18,7 @@ public:
 };
 // 替换空格
 // 思路：从后往前遍历
-class Solution {
+class Solution2 {
 public:
 	void replaceSpace(char *str, int length) {
 		int space_cnt = 0;
@@ -53,7 +53,7 @@ public:
 *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 * };
 */
-class Solution {
+class Solution3 {
 public:
 	TreeNode* reConstructBinaryTree(vector<int> pre, vector<int> vin) {
 		if (pre.empty() || vin.empty()) return nullptr;
@@ -83,4 +83,30 @@ public:
 		root->right = helper(pre, vin, idx, mid + 1, end);
 		return root;
 	}
+};
+
+// 两个栈实现队列
+// 思路：一个栈作为push专用，一个栈作为pop专用
+class Solution4
+{
+public:
+	void push(int node) {
+		stack1.push(node);
+	}
+
+	int pop() {
+		if (stack2.empty()) {
+			while (!stack1.empty()) {
+				stack2.push(stack1.top());
+				stack1.pop();
+			}
+		}
+		int top = stack2.top();
+		stack2.pop();
+		return top;
+	}
+
+private:
+	stack<int> stack1;
+	stack<int> stack2;
 };
