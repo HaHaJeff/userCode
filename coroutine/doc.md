@@ -7,15 +7,15 @@
 
 **因为程序的使用涉及大量的计算资源配置，把这活随意的交给用户程序，非常容易让整个系统分分钟被搞跪，资源分配也很难做到相对的公平。所有核心的操作需要陷入内核，切换到操作系统，让老大帮你来做。**
 
-###为什么需要线程？
+### 为什么需要线程？
 有时候碰着IO访问，阻塞了后面的计算。空着也是空着，老大就直接把CPU切换到其他进程，让人家先用着。当然了除了IO阻塞，还有时间阻塞等等。但是如果进程多了，那么切换的开销就会很大，因为一切换进程得反复进入内核，置换掉一大堆状态。后来出现了线程的概念，大致意思就是，这个地方阻塞了，但我还有其他地方的逻辑流可以计算，这些逻辑流是共享一个地址空间的，不用特别麻烦的切换页表、刷新TLB。
 
-###为什么需要协程？
+### 为什么需要协程？
 如果连时钟阻塞、线程切换这些功能都不需要了，自己在进程里面写一个逻辑流调度的东西。那么我们既可以利用并发优势，又可以避免反复系统调用，还有进程切换造成的开销，分分钟给你上几千个逻辑流不费力。这就是用户态线程。
 
 **实现一个用户态线程有两个必须要处理的问题：1. 碰着阻塞式IO会导致整个进程被挂起；2. 由于缺乏时钟阻塞，进程需要自己拥有调度线程的能力。如果一种实现使得每个线程需要自己通过某个方法，主动交出控制权。那么我们就称这种用户态线程为协作式的，即是协程。**
 
-##CoContext的实现
+## CoContext的实现
 使用ucontext_t类型完成协程上下文的制作
 - Makecontext完成上下文的制作
 - swapcontext完成切换
@@ -54,7 +54,7 @@ static CoContextCreateFunc_t GetContextCreateFunc()
 static CoContext* DoCreate(size_t stack_size, CoFunc_t func, void* args, CoDoneCallback_t callback, const bool need_stack_protect);
 ```
 
-###CoContextRuntime
+### CoContextRuntime
 - 封装ContextItem对Context进行管理，next_done_item将空闲的Context串起来，可以减少Context的创建开销
 ```
 Create(CoFunc_t, void *args);  //创建协程上下文，如果context_list_中的first_done_item_ != -1，则不需要创建context，可以完成context的复用
@@ -74,7 +74,7 @@ vector<ContextItem> context_list_;
 first_done_item_;
 ```
 
-###CoContextUtil
+### CoContextUtil
 栈的制作
 ```
 CoStackMemory
@@ -83,7 +83,7 @@ CoStackMemory
 使用mprotect在stack之间进行内存保护
 ```
 
-###CoContextEpoll
+### CoContextEpoll
 ```
 //epoll_wait返回可读描述符，调度对应描述符对应的处理逻辑
 void Run();
