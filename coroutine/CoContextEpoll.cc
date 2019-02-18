@@ -104,6 +104,7 @@ namespace coroutine
   }
 
   //单例，不需要考虑多线程安全问题
+  //c++0x之后,标准要求编译器保证内部静态变量的线程安全性
   EpollScheduler* EpollScheduler::Instance() {
     static EpollScheduler obj(64, 1024, 300);
     return &obj;
