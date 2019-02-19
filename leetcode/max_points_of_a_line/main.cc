@@ -49,6 +49,45 @@ public:
 	}
 };
 
+/**
+ * Definition for a point.
+ * struct Point {
+ *     int x;
+ *     int y;
+ *     Point() : x(0), y(0) {}
+ *     Point(int a, int b) : x(a), y(b) {}
+ * };
+ */
+class Solution {
+public:
+    int gcd(int a, int b) {
+        if (b == 0) return a;
+        return gcd(b, a%b);
+    }
+    int maxPoints(vector<Point> &points) {
+        int ans = 0;
+        for (int i = 0; i < points.size(); i++) {
+            map<pair<int, int>, int> m;
+            int vertical = 0, coincident = 0, maxK = 0;
+            for (int j = i+1; j < points.size(); j++) {
+                if (points[i].x == points[j].x && points[i].y == points[j].y) {
+                    coincident++;
+                } else if (points[i].x == points[j].x) {
+                    maxK = max(maxK, ++vertical);
+                } else {
+                    int x = points[i].x - points[j].x;
+                    int y = points[i].y - points[j].y;
+                    int g = gcd(x, y);
+                    x /= g; y/=g;
+                    maxK = max(maxK, ++m[make_pair(x, y)]);
+                }
+            }
+            ans = max(ans, coincident+maxK+1);
+        }
+        return ans;
+    }
+};
+
 int main() {
 	Solution sol;
 
