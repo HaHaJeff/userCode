@@ -9,6 +9,7 @@ public:
         
         for (int i = 3; i < A.size(); i++) {
             if (A[i]-A[i-1] == A[i-1]-A[i-2]) {
+                // +1表示dp[i-1]中的A[i-2]A[i-1]A[i]也是的
                 dp[i] = dp[i-1]+1;
             }
             result += dp[i];
