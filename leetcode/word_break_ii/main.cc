@@ -53,3 +53,27 @@ public:
         return result;
     }
 };
+
+/*
+Runtime: 16 ms, faster than 90.31% of C++ online submissions for Word Break II.
+Memory Usage: 12 MB, less than 78.09% of C++ online submissions for Word Break II.
+*/
+class Solution {
+private:
+    std::unordered_map<string, vector<string>> cache;
+public:
+    vector<string> wordBreak(string s, vector<string>& wordDict) { 
+        if (s.empty()) return {""};
+        if (cache.find(s) != cache.end()) return cache[s];
+        vector<string> result;
+        for (auto& str : wordDict) {
+            if (s.substr(0, str.size()) != str) continue;
+            vector<string> res = wordBreak(s.substr(str.size()), wordDict);
+            for (auto& r : res) {
+                result.push_back(str+(r.empty()?"":" ")+r);
+            }
+        } 
+        cache[s] = result;
+        return result;
+    }
+};
