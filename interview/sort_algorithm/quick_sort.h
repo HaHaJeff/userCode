@@ -5,11 +5,21 @@ using namespace std;
 
 void QuickSort(vector<int>& nums) ;
 int Partition(vector<int>& nums, int start, int end);
-void SortCoreRec(vector<int>& nums, int start, int end);
-void SortCoreIter(vector<int>& nums, int start, int end);
+int PartitionStable(vector<int>& nums, int start, int end);
+void QSortCoreRec(vector<int>& nums, int start, int end);
+void QSortCoreIter(vector<int>& nums, int start, int end);
 
 void QuickSort(vector<int>& nums) {
-    SortCoreIter(nums, 0, nums.size()-1);
+    QSortCoreIter(nums, 0, nums.size()-1);
+}
+
+int PartitionStable(vector<int>& nums, int start, int end) {
+    int pivot = nums[start];
+    while (start < end) {
+        while (pivot <= nums[end] && start < end) --end;
+
+    }
+    return 0;
 }
 
 int Partition(vector<int>& nums, int start, int end) {
@@ -24,15 +34,15 @@ int Partition(vector<int>& nums, int start, int end) {
     return start;
 }
 
-void SortCoreRec(vector<int>& nums, int start, int end) {
+void QSortCoreRec(vector<int>& nums, int start, int end) {
     if (start < end) {
         int mid = Partition(nums, start, end);
-        SortCoreRec(nums, start, mid-1);
-        SortCoreRec(nums, mid+1, end);
+        QSortCoreRec(nums, start, mid-1);
+        QSortCoreRec(nums, mid+1, end);
     }
 }
 
-void SortCoreIter(vector<int>& nums, int start, int end) {
+void QSortCoreIter(vector<int>& nums, int start, int end) {
     stack<int> s;
     s.push(start);
     s.push(end);
