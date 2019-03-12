@@ -1,5 +1,10 @@
 # paxos
 
+paxos作为一种分布式环境下的共识性算法，其目标是保证在多数派机器存活的情况下依旧能够维持数据的一致性，其与2pc等算法的区别在于：
+
+- 2PC属于阻塞的且不容错的
+- paxos属于非阻塞且容错的
+
 ## prepare阶段
 
 - proposer向acceptor广播prepare请求，prepare请求需要携带上proposalId号
