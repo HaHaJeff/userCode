@@ -5,6 +5,7 @@
 #include <list>
 #include <cstddef>
 #include <stdexcept>
+#include <iostream>
 
 
 namespace cache {
@@ -33,7 +34,7 @@ namespace cache {
         // 如果存在数据
         if (iter != cache_items_map_.end()) {
           cache_items_list_.erase(iter->second);
-          cache_items_map_.erase(iter);
+          //cache_items_map_.erase(iter);
         }
 
         cache_items_map_[key] = cache_items_list_.begin();
@@ -54,6 +55,8 @@ namespace cache {
           throw std::range_error("There is no such key in cache");
         } else {
           cache_items_list_.splice(cache_items_list_.begin(), cache_items_list_, iter->second);
+          // FIXME: update iter in map, but list iter is pointer, so maybe not need update
+          cache_items_map_[iter->first] = cache_items_list_.begin();
           return iter->second->second;
         }
       }
@@ -66,6 +69,11 @@ namespace cache {
         return cache_items_map_.size();
       }
 
+      void Print() const {
+          for (auto& i : cache_items_list_) {
+              std::cout << "key:" << i.first << "\tvalue:" << i.second << std::endl; 
+          }
+      }
     private:
       //禁止拷贝,赋值
       LRUCache(const LRUCache&) {}
