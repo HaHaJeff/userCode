@@ -40,7 +40,7 @@ public:
 };
 ```
 
-## two sum iv input as a bst
+# two sum iv input as a bst
 **在一个平衡二叉树中找到两数之和为num**
 - 方法1：采用递归的是， O(nh)，h最好情况为lgn，最坏为n，额外空间复杂度O(h)
 **思路：采用递归的方式对每一个节点都进行判断，每次判断相当于在整颗数中寻找满足val == k-cur->val（寻找的过程中可以利用bst特性加速）**
