@@ -1,24 +1,95 @@
 type TreeNode<Key, Val> = Option<Box<Node<Key, Val>>>;
 
-#[derive(Debug)]
-struct Node<Key: PartialOrd, Val: std::fmt::Display> {
+#[derive(Debug, Clone)]
+pub struct Node<Key, Val>
+    where Key: PartialOrd+std::fmt::Display+Copy,
+          Val: std::fmt::Display+Copy
+{
     left: TreeNode<Key, Val>,
     right: TreeNode<Key, Val>,
     key: Key,
     val: Val, 
 }
 
-trait BinaryTree<Key: PartialOrd, Val: std::fmt::Display> {
-    fn preOrder(&self);
-    fn inOrder(&self);
-    fn posOrder(&self);
+pub struct BinaryTree<Key, Val>
+    where Key: PartialOrd+std::fmt::Display+Copy,
+          Val: std::fmt::Display+Copy
+{
+    pub root: TreeNode<Key, Val>
 }
 
-trait BinarySearchTree<Key: PartialOrd, Val: std::fmt::Display> {
-    fn insert(&mut self, key: Key, val: Val);
+impl <Key, Val> BinaryTree<Key, Val>
+    where Key: PartialOrd+std::fmt::Display+Copy,
+          Val: std::fmt::Display+Copy
+{
+    pub fn new() -> Self {
+        BinaryTree {
+            root: None
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        !self.root.is_some()
+    }
+
+    pub fn insert(&mut self, key: Key, val: Val) -> bool {
+        match self.root.take() {
+            Some(node) => {
+                insert(node, key, val);
+                true
+            },
+            None => {
+                self.root = Some(Box::new(Node::new(key, val)));
+                true
+            }
+        }
+    }
+
+    pub fn delete(&mut self, key: Key) -> bool {
+        match &self.root.take() {
+            Some(node) => {
+                //self.root = Some(node.delete(key)),
+                true
+            },
+            None => {
+                false
+            }
+        }
+    }
+    
+   /* pub fn print(&self) {
+        match &self.root.take() {
+            Some(node) => node.print(),
+            None => panic!(),
+        }
+    }
+    */
 }
 
-impl<Key: PartialOrd, Val: std::fmt::Display> Node<Key, Val> {
+fn insert<Key, Val>(mut _node: Box<Node<Key, Val>>, key: Key, val: Val)
+    where Key: PartialOrd+std::fmt::Display+Copy,
+          Val: std::fmt::Display+Copy
+{
+    let mut node = *_node;
+    if node.key < key {
+        if let Some(right) = node.right {
+            insert(right, key, val);
+        } else {
+            node.right = Some(Box::new(Node::new(key,val)));
+        }
+    } else {
+        if let Some(left) = node.left {
+            insert(left, key, val);
+        } else {
+            node.left = Some(Box::new(Node::new(key, val)))
+        }
+    }
+}
+
+impl<Key, Val> Node<Key, Val> 
+    where Key: PartialOrd+std::fmt::Display+Copy,
+          Val: std::fmt::Display+Copy
+{
     fn new(key:Key, val: Val) -> Self {
         Node {
             left: None,
@@ -27,36 +98,41 @@ impl<Key: PartialOrd, Val: std::fmt::Display> Node<Key, Val> {
             val: val,
         }
     }
-}
 
-impl<Key: PartialOrd, Val: std::fmt::Display> BinarySearchTree<Key, Val> for Node<Key, Val>{
-    fn insert(&mut self, key: Key, val: Val) {
-        if self.key < key {
-            if let Some(ref mut right) = self.right {
-                right.insert(key, val);
-            } else {
-                self.right = Some(Box::new(Node::new(key, val)));
-            }
-        } else {
-            if let Some(ref mut left) = self.left {
-                left.insert(key, val);
-            } else {
-                self.left = Some(Box::new(Node::new(key, val)));
-            }
+    fn print(&self) {
+        if let &Some(ref left) = &self.left {
+            left.print();
         }
+        println!("<{},{}>", self.key, self.val);
+        if let &Some(ref right) = &self.right {
+            right.print();
+        }
+    }
+
+    fn left(&self) -> &TreeNode<Key,Val> {
+        &self.left
+    }
+
+    fn right(&self) -> &TreeNode<Key,Val> {
+        &self.right
+    }
+
+    fn key(&self) -> Key {
+        self.key
+    }
+
+    fn val(&self) -> Val {
+        self.val
     }
 }
 
 type BST<Key, Val> = Node<Key, Val>;
 fn test_insert() {
-    let mut root = BST::<i32, i32>::new(3, 4);
-    root.insert(2, 3);
-    root.insert(4, 6);
-    root.insert(5, 5);
-    if let Some(ref left) = root.left {
-        assert_eq!(left.val, 3);
-    }
-    println!("{:?}", root);
+    let mut tree = BinaryTree::<i32, i32>::new();
+    tree.insert(2, 3);
+    tree.insert(5, 5);
+    println!("{}", tree.root)
+    //let ret = root.delete(2);
 }
 
 fn main() {
