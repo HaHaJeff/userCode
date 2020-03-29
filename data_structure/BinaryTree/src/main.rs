@@ -1,25 +1,28 @@
+use std::cmp;
+use std::cmp::Ordering;
+
 type TreeNode<Key, Val> = Option<Box<Node<Key, Val>>>;
 
 #[derive(Debug, Clone)]
 pub struct Node<Key, Val>
-    where Key: PartialOrd+std::fmt::Display+Copy,
+    where Key: Ord+std::fmt::Display+Copy,
           Val: std::fmt::Display+Copy
 {
-    left: TreeNode<Key, Val>,
-    right: TreeNode<Key, Val>,
-    key: Key,
-    val: Val, 
+    pub left: TreeNode<Key, Val>,
+    pub right: TreeNode<Key, Val>,
+    pub key: Key,
+    pub val: Val, 
 }
 
 pub struct BinaryTree<Key, Val>
-    where Key: PartialOrd+std::fmt::Display+Copy,
+    where Key: Ord+std::fmt::Display+Copy,
           Val: std::fmt::Display+Copy
 {
     pub root: TreeNode<Key, Val>
 }
 
 impl <Key, Val> BinaryTree<Key, Val>
-    where Key: PartialOrd+std::fmt::Display+Copy,
+    where Key: Ord+std::fmt::Display+Copy,
           Val: std::fmt::Display+Copy
 {
     pub fn new() -> Self {
@@ -48,6 +51,7 @@ impl <Key, Val> BinaryTree<Key, Val>
     pub fn delete(&mut self, key: Key) -> bool {
         match self.root {
             Some(ref mut node) => {
+                self.root = delete(node, key);
                 true
             },
             None => {
@@ -65,7 +69,7 @@ impl <Key, Val> BinaryTree<Key, Val>
 }
 
 fn insert<Key, Val>(node: &mut Box<Node<Key, Val>>, key: Key, val: Val)
-    where Key: PartialOrd+std::fmt::Display+Copy,
+    where Key: Ord+std::fmt::Display+Copy,
           Val: std::fmt::Display+Copy
 {
     if node.key < key {
@@ -83,8 +87,28 @@ fn insert<Key, Val>(node: &mut Box<Node<Key, Val>>, key: Key, val: Val)
     }
 }
 
+fn delete <Key, Val>(node: &mut Box<Node<Key, Val>>, key: Key) -> Option<Box<Node<Key,Val>>>
+    where Key: Ord+std::fmt::Display+Copy,
+          Val: std::fmt::Display+Copy
+{
+}
+
+fn find_max<Key, Val>(node: &mut Box<Node<Key,Val>>) -> Option<Box<Node<Key,Val>>>
+    where Key: Ord+std::fmt::Display+Copy,
+          Val: std::fmt::Display+Copy
+{
+    /*
+    while let Some(ref mut right) = node.right {
+        match right {
+            Some(ref mut n) => n = node.right,
+            None
+        }
+    }
+    */
+    None
+}
 impl<Key, Val> Node<Key, Val> 
-    where Key: PartialOrd+std::fmt::Display+Copy,
+    where Key: Ord+std::fmt::Display+Copy,
           Val: std::fmt::Display+Copy
 {
     fn new(key:Key, val: Val) -> Self {
@@ -97,10 +121,10 @@ impl<Key, Val> Node<Key, Val>
     }
 
     fn print(&self) {
+        println!("<{},{}>", self.key, self.val);
         if let Some(ref left) = self.left {
             left.print();
         }
-        println!("<{},{}>", self.key, self.val);
         if let Some(ref right) = self.right {
             right.print();
         }
@@ -123,17 +147,20 @@ impl<Key, Val> Node<Key, Val>
     }
 }
 
-fn test_insert() {
-    let mut tree = BinaryTree::<i32, i32>::new();
-    tree.insert(5, 3);
-    tree.insert(2, 3);
-    tree.insert(4, 3);
-    tree.insert(6, 3);
-    tree.insert(1, 3);
-    tree.insert(3, 3);
-    tree.print();
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_insert() -> Result<(), String> {
+        let mut tree = BinaryTree::<i32, i32>::new();
+        assert_eq!(tree.insert(5, 3), true);
+        assert_eq!(tree.insert(2, 3), true);
+        assert_eq!(tree.insert(4, 3), true);
+        Ok(())
+    }
 }
 
-fn main() {
-    test_insert();
+fn main()
+{
+
 }
