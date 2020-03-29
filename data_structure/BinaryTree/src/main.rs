@@ -33,8 +33,8 @@ impl <Key, Val> BinaryTree<Key, Val>
     }
 
     pub fn insert(&mut self, key: Key, val: Val) -> bool {
-        match self.root.take() {
-            Some(node) => {
+        match self.root {
+            Some(ref mut node) => {
                 insert(node, key, val);
                 true
             },
@@ -46,9 +46,8 @@ impl <Key, Val> BinaryTree<Key, Val>
     }
 
     pub fn delete(&mut self, key: Key) -> bool {
-        match &self.root.take() {
-            Some(node) => {
-                //self.root = Some(node.delete(key)),
+        match self.root {
+            Some(ref mut node) => {
                 true
             },
             None => {
@@ -57,28 +56,26 @@ impl <Key, Val> BinaryTree<Key, Val>
         }
     }
     
-   /* pub fn print(&self) {
-        match &self.root.take() {
-            Some(node) => node.print(),
+    pub fn print(&self) {
+        match self.root {
+            Some(ref node) => node.print(),
             None => panic!(),
         }
     }
-    */
 }
 
-fn insert<Key, Val>(mut _node: Box<Node<Key, Val>>, key: Key, val: Val)
+fn insert<Key, Val>(node: &mut Box<Node<Key, Val>>, key: Key, val: Val)
     where Key: PartialOrd+std::fmt::Display+Copy,
           Val: std::fmt::Display+Copy
 {
-    let mut node = *_node;
     if node.key < key {
-        if let Some(right) = node.right {
+        if let Some(ref mut right) = node.right {
             insert(right, key, val);
         } else {
             node.right = Some(Box::new(Node::new(key,val)));
         }
     } else {
-        if let Some(left) = node.left {
+        if let Some(ref mut left) = node.left {
             insert(left, key, val);
         } else {
             node.left = Some(Box::new(Node::new(key, val)))
@@ -100,11 +97,11 @@ impl<Key, Val> Node<Key, Val>
     }
 
     fn print(&self) {
-        if let &Some(ref left) = &self.left {
+        if let Some(ref left) = self.left {
             left.print();
         }
         println!("<{},{}>", self.key, self.val);
-        if let &Some(ref right) = &self.right {
+        if let Some(ref right) = self.right {
             right.print();
         }
     }
@@ -126,13 +123,15 @@ impl<Key, Val> Node<Key, Val>
     }
 }
 
-type BST<Key, Val> = Node<Key, Val>;
 fn test_insert() {
     let mut tree = BinaryTree::<i32, i32>::new();
+    tree.insert(5, 3);
     tree.insert(2, 3);
-    tree.insert(5, 5);
-    println!("{}", tree.root)
-    //let ret = root.delete(2);
+    tree.insert(4, 3);
+    tree.insert(6, 3);
+    tree.insert(1, 3);
+    tree.insert(3, 3);
+    tree.print();
 }
 
 fn main() {
